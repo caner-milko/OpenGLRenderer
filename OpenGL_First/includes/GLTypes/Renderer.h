@@ -42,7 +42,5 @@ public:
 
 	void draw();
 
-	void free();
-
 	~Renderer();
 };

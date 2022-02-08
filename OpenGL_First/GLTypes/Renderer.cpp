@@ -80,10 +80,9 @@ void Renderer::draw()
 
 	camera->updateMatrices();
 
-	const glm::mat4 &VP = camera->getVPMatrix();
 	for(int id = 0; id < renderObjects.size(); id++)
 	{
-		renderObjects[id]->draw(VP, camera->isVPUpdated());
+		renderObjects[id]->draw(*camera);
 	}
 	camera->clearFlags();
 }

@@ -29,22 +29,6 @@ const glm::vec3 &RenderObject::getScale() const
 	return scale;
 }
 
-template<typename Type>
-const ShaderUniform<Type> *RenderObject::getShaderUniform(const std::string &name)
-{
-	return (ShaderUniform<Type>*)uniforms[name];
-}
-
-template<typename Type>
-void RenderObject::setShaderUniformVal(const std::string &name, Type val)
-{
-	if(uniforms.find(name) == uniforms.end())
-	{
-		uniforms[name] = (IShaderUniform *)new ShaderUniform<Type>(name, val);
-	}
-	((ShaderUniform<Type>*)uniforms[name])->setValue(*shader, val);
-}
-
 void RenderObject::setPosition(const glm::vec3 &position)
 {
 	this->position = position;
@@ -71,19 +55,38 @@ const glm::mat4 &RenderObject::getModel(bool forcedUpdate)
 	return model;
 }
 
-void RenderObject::updateMVP(const glm::mat4 &VP, bool VPUpdated)
+void RenderObject::updateMVP(FreeCamera &camera)
 {
 	getModel();
-	if(!(VPUpdated || changedModel || model != getShaderUniform<glm::mat4>("MVP")->getValue()))
+	bool diffModel = changedModel || model != getShaderUniform<glm::mat4>("MVP")->getValue();
+	if(!(camera.isVPUpdated() || diffModel))
 		return;
+	const glm::mat4 &VP = camera.getVPMatrix();
+	const glm::mat4 &V = camera.getViewMatrix();
+	const glm::mat4 &P = camera.getProjectionMatrix();
 	glm::mat4 MVP = VP * model;
+	glm::mat4 MV = V * model;
+	if(diffModel)
+	{
+		setShaderUniformVal("M", model);
+		const glm::mat4 inverseModel = glm::inverse(model);
+		setShaderUniformVal("IM", inverseModel);
+		setShaderUniformVal("TIM", glm::transpose(inverseModel));
+	}
 	setShaderUniformVal("MVP", MVP);
+	setShaderUniformVal("MV", MV);
+	if(camera.isVPUpdated())
+	{
+		setShaderUniformVal("P", P);
+		setShaderUniformVal("VP", VP);
+		setShaderUniformVal("viewPos", camera.getCameraPos());
+	}
 	changedModel = false;
 }
 
-void RenderObject::draw(const glm::mat4 &VP, bool VPUpdated)
+void RenderObject::draw(FreeCamera &camera)
 {
-	updateMVP(VP, VPUpdated);
+	updateMVP(camera);
 	vtxArray->useIfNecessary();
 	if(elementBuffer != nullptr)
 	{

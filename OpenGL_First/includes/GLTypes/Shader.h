@@ -41,8 +41,8 @@ class ShaderUniform : public IShaderUniform
 private:
 	Type val;
 public:
-	ShaderUniform(const std::string &name, Type val);
-	void setValue(Shader &shader, Type newVal);
+	ShaderUniform(const std::string &name, const Type &val);
+	void setValue(Shader &shader, const Type &newVal);
 	void updateShader(Shader &shader) const override;
 	const Type &getValue() const;
 };

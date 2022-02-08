@@ -186,7 +186,7 @@ const std::string &IShaderUniform::getName() const
 }
 
 template<typename Type>
-ShaderUniform<Type>::ShaderUniform(const std::string &name, Type val) : IShaderUniform(name), val(val)
+ShaderUniform<Type>::ShaderUniform(const std::string &name, const Type &val) : IShaderUniform(name), val(val)
 {
 }
 
@@ -197,7 +197,7 @@ void ShaderUniform<Type>::updateShader(Shader &shader) const
 }
 
 template <typename Type>
-void ShaderUniform<Type>::setValue(Shader &shader, Type val)
+void ShaderUniform<Type>::setValue(Shader &shader, const Type &val)
 {
 	this->val = val;
 	updateShader(shader);

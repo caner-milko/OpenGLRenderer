@@ -51,9 +51,20 @@ public:
 	const glm::vec3 &getScale() const;
 
 	template<typename Type>
-	const ShaderUniform<Type> *getShaderUniform(const std::string &name);
+	const ShaderUniform<Type> *getShaderUniform(const std::string &name)
+	{
+		return (ShaderUniform<Type>*)uniforms[name];
+	}
+
 	template<typename Type>
-	void setShaderUniformVal(const std::string &name, Type val);
+	void setShaderUniformVal(const std::string &name, const Type &val)
+	{
+		if(uniforms.find(name) == uniforms.end())
+		{
+			uniforms[name] = (IShaderUniform *)new ShaderUniform<Type>(name, val);
+		}
+		((ShaderUniform<Type>*)uniforms[name])->setValue(*shader, val);
+	}
 
 	void setPosition(const glm::vec3 &position);
 	void setRotation(const glm::vec3 &rotation);
@@ -61,7 +72,7 @@ public:
 
 
 	const glm::mat4 &getModel(bool forcedUpdate = false);
-	void updateMVP(const glm::mat4 &camera, bool VPUpdated);
+	void updateMVP(FreeCamera &camera);
 
-	void draw(const glm::mat4 &camera, bool VPUpdated);
+	void draw(FreeCamera &camera);
 };

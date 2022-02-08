@@ -108,12 +108,92 @@ int main()
 	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 	};
 
-	std::vector<float> vertices2 = {
-		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	std::vector<float> normalCube = {
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
 
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+	};
+
+	std::vector<float> lightVertices = {
+		-0.5f, -0.5f, -0.5f,
+		 0.5f, -0.5f, -0.5f,
+		 0.5f,  0.5f, -0.5f,
+		 0.5f,  0.5f, -0.5f,
+		-0.5f,  0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+
+		-0.5f, -0.5f,  0.5f,
+		 0.5f, -0.5f,  0.5f,
+		 0.5f,  0.5f,  0.5f,
+		 0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f,  0.5f,
+		-0.5f, -0.5f,  0.5f,
+
+		-0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+		-0.5f, -0.5f,  0.5f,
+		-0.5f,  0.5f,  0.5f,
+
+		 0.5f,  0.5f,  0.5f,
+		 0.5f,  0.5f, -0.5f,
+		 0.5f, -0.5f, -0.5f,
+		 0.5f, -0.5f, -0.5f,
+		 0.5f, -0.5f,  0.5f,
+		 0.5f,  0.5f,  0.5f,
+
+		-0.5f, -0.5f, -0.5f,
+		 0.5f, -0.5f, -0.5f,
+		 0.5f, -0.5f,  0.5f,
+		 0.5f, -0.5f,  0.5f,
+		-0.5f, -0.5f,  0.5f,
+		-0.5f, -0.5f, -0.5f,
+
+		-0.5f,  0.5f, -0.5f,
+		 0.5f,  0.5f, -0.5f,
+		 0.5f,  0.5f,  0.5f,
+		 0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f, -0.5f,
 	};
 
 	std::vector<uint32_t> indices = {
@@ -122,6 +202,8 @@ int main()
 	};
 
 	std::vector<uint32_t> attributeSizes = {3,2};
+	std::vector<uint32_t> lightAttributeSizes = {3};
+	std::vector<uint32_t> normalAttributeSizes = {3,3};
 
 	Renderer *renderer = new Renderer(RendererData());
 
@@ -136,24 +218,46 @@ int main()
 	/*---------------------------------------------------*/
 	//shaders
 	// 
-	//Shader *shader = new Shader("./Assets/Shaders/def_vert.glsl", "./Assets/Shaders/def_frag.glsl");
 	Shader *shader = new Shader("./Assets/Shaders/def_vert.glsl", "./Assets/Shaders/def_frag.glsl");
 	shader->addTexture("texture1", textures[0]);
 	shader->addTexture("texture2", textures[1]);
+
+	Shader *lightingShader = new Shader("./Assets/Shaders/light_vert.glsl", "./Assets/Shaders/light_frag.glsl");
+
+	Shader *litShader = new Shader("./Assets/Shaders/lit_vert.glsl", "./Assets/Shaders/lit_frag.glsl");
+
+
 	/*---------------------------------------------------*/
-
-	RenderObject *quad = renderer->addMesh(RenderObjectData(), shader, vertices2, attributeSizes, indices);
-
 
 
 	RenderObject *odd = renderer->addOddObject(RenderObjectData(), shader, vertices, attributeSizes);
 
+	RenderObject *light = renderer->addOddObject(RenderObjectData(), lightingShader, lightVertices, lightAttributeSizes);
+
+	RenderObject *litObj = renderer->addOddObject(RenderObjectData(), litShader, normalCube, normalAttributeSizes);
+
+	glm::vec3 lightPos = glm::vec3(2.0f, 2.0f, -2.0f);
+
+	light->setPosition(lightPos);
+	litObj->setPosition(glm::vec3());
+
+
+
+	glm::vec3 objectColor = glm::vec3(1.0f, 0.5f, 0.31f);
+	glm::vec3 lightColor = glm::vec3(1.0f);
+
+	litObj->setShaderUniformVal("lightPos", lightPos);
+	litObj->setShaderUniformVal("objectColor", objectColor);
+	litObj->setShaderUniformVal("lightColor", lightColor);
+
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+	//glLineWidth(3.0f);
+
+	//glPointSize(10.0f);
+
 	std::vector<glm::vec3> cubePositions = {
-		glm::vec3(0.0f,  0.0f,  0.0f),
 		glm::vec3(2.0f,  5.0f, -15.0f),
-		glm::vec3(-1.5f, -2.2f, -2.5f),
 		glm::vec3(-3.8f, -2.0f, -12.3f),
 		glm::vec3(2.4f, -0.4f, -3.5f),
 		glm::vec3(-1.7f,  3.0f, -7.5f),
@@ -163,15 +267,12 @@ int main()
 		glm::vec3(-1.3f,  1.0f, -1.5f)
 	};
 
-	quad->setPosition(cubePositions[1]);
-
 	odd->setPosition(cubePositions[0]);
 
 	std::vector<RenderObject *> objects;
-	objects.push_back(quad);
 	objects.push_back(odd);
 
-	for(int i = 2; i < cubePositions.size(); i++)
+	for(int i = 1; i < cubePositions.size(); i++)
 	{
 		glm::vec3 pos = cubePositions[i];
 		RenderObject *ro = renderer->cloneObject(odd->rObjetID);
@@ -193,6 +294,8 @@ int main()
 		double sinTime = glm::sin(currentFrame);
 
 
+		//litObj->setRotation(glm::vec3(0, glm::radians(180 * glm::cos(0.3 * currentFrame)), 0.0f));
+		//litObj->setPosition(glm::vec3(glm::sin(currentFrame * 0.3f) * 5.0, 0.0f, 0.0f));
 
 
 		for(int i = 0; i < objects.size(); i++)
@@ -269,6 +372,10 @@ void processInput(GLFWwindow *window)
 		cameraPos -= camera->getCameraRight() * cameraSpeed;
 	if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		cameraPos += camera->getCameraRight() * cameraSpeed;
+	if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+		cameraPos += glm::vec3(0.0f, cameraSpeed, 0.0f);
+	if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+		cameraPos += glm::vec3(0.0f, -cameraSpeed, 0.0f);
 
 	camera->setCameraPos(cameraPos);
 
