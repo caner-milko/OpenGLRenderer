@@ -80,8 +80,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>G:\graphics\opengl\dependencies\include;$(IncludePath);$(ProjectDir)includes;</IncludePath>
-    <LibraryPath>G:\graphics\opengl\dependencies\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)dependencies\include;$(IncludePath);$(ProjectDir)includes</IncludePath>
+    <LibraryPath>$(ProjectDir)dependencies\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -146,6 +146,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="dependencies\compile\glad.c" />
     <ClCompile Include="GLTypes\Camera.cpp" />
     <ClCompile Include="GLTypes\ElementBuffer.cpp" />
     <ClCompile Include="GLTypes\Renderer.cpp" />
@@ -154,7 +155,6 @@
     <ClCompile Include="GLTypes\VertexBuffer.cpp" />
     <ClInclude Include="includes\GLTypes\ElementBuffer.h" />
     <ClCompile Include="Utils\FileUtils.cpp" />
-    <ClCompile Include="glad.c" />
     <ClCompile Include="GLTypes\Texture2D.cpp" />
     <ClCompile Include="GLTypes\Shader.cpp" />
   </ItemGroup>
@@ -168,7 +168,6 @@
     <ClInclude Include="includes\Utils\FileUtils.h" />
     <ClInclude Include="includes\GLTypes\Shader.h" />
     <ClInclude Include="includes\GLTypes\Texture.h" />
-    <ClInclude Include="includes\stb_image.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
