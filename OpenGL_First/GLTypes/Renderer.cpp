@@ -32,6 +32,7 @@ RenderObject *Renderer::addOddObject(RenderObjectData data, Shader *shader, cons
 	vtxBuffer->release();
 	vtxArray->release();
 	RenderObject *renderObject = new RenderObject(id, data, shader, vtxBuffer, vtxArray);
+
 	renderObjects.push_back(renderObject);
 	return renderObject;
 }
@@ -58,6 +59,7 @@ RenderObject *Renderer::addMesh(RenderObjectData data, Shader *shader, const std
 	vtxArray->release();
 	elementBuffer->release();
 	RenderObject *renderObject = new RenderObject(id, data, shader, vtxBuffer, vtxArray, elementBuffer);
+
 	renderObjects.push_back(renderObject);
 	return renderObject;
 }
@@ -66,7 +68,6 @@ RenderObject *Renderer::cloneObject(uint32_t clone)
 {
 	uint32_t id = itemCount++;
 	RenderObject *clonedObject = new RenderObject(id, *renderObjects[clone]);
-
 	renderObjects.push_back(clonedObject);
 
 	return clonedObject;
@@ -80,23 +81,33 @@ void Renderer::draw()
 
 	camera->updateMatrices();
 
-	for(int id = 0; id < renderObjects.size(); id++)
+	for(auto const &ro : renderObjects)
 	{
-		renderObjects[id]->draw(*camera);
+		ro->draw(*camera);
 	}
+
 	camera->clearFlags();
 }
 
 Renderer::~Renderer()
 {
+	std::cout << "Renderer delete" << std::endl;
 	delete camera;
-	for(uint32_t i = 0; i < itemCount; i++)
+	for(auto const &ro : renderObjects)
 	{
-		delete vtxBuffers[i];
-		delete vtxArrays[i];
-		if(elementBuffers.find(i) != elementBuffers.end())
-			delete elementBuffers[i];
+		delete ro;
 	}
-	for(uint32_t i = 0; i < renderObjects.size(); i++)
-		delete renderObjects[i];
+	for(auto const &it : vtxBuffers)
+	{
+		delete it.second;
+	}
+	for(auto const &it : vtxArrays)
+	{
+		delete it.second;
+	}
+	for(auto const &it : elementBuffers)
+	{
+		delete it.second;
+	}
+
 }

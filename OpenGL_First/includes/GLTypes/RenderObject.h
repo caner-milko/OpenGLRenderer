@@ -26,44 +26,47 @@ class RenderObject
 {
 
 private:
-	VertexBuffer *vtxBuffer;
-	VertexArray *vtxArray;
-	ElementBuffer *elementBuffer;
-	Shader *shader;
 
+	bool first = true;
 	bool changedModel = true;
 	glm::mat4 model = glm::mat4(1.0f);
 
 
 	glm::vec3 position = glm::vec3(0.0f), rotation = glm::vec3(0.0f), scale = glm::vec3(1.0f);
 
-	std::unordered_map<std::string, IShaderUniform *> uniforms;
-
 public:
+	VertexBuffer *const vtxBuffer;
+	VertexArray *const vtxArray;
+	ElementBuffer *const elementBuffer;
+	Shader *const shader;
 	RenderObjectData objectParams;
-	const uint32_t rObjetID;
-	RenderObject(uint32_t id, RenderObjectData objectParams, Shader *shader, VertexBuffer *vtxBuffer, VertexArray *vtxArray);
-	RenderObject(uint32_t id, RenderObjectData objectParams, Shader *shader, VertexBuffer *vtxBuffer, VertexArray *vtxArray, ElementBuffer *elementBuffer);
+	const uint32_t rObjectID;
+	RenderObject(uint32_t id, RenderObjectData objectParams, Shader *const shader, VertexBuffer *const vtxBuffer, VertexArray *const vtxArray);
+	RenderObject(uint32_t id, RenderObjectData objectParams, Shader *const shader, VertexBuffer *const vtxBuffer, VertexArray *const vtxArray, ElementBuffer *const elementBuffer);
 	RenderObject(uint32_t id, const RenderObject &from);
+
+	bool hasElementBuffer() const;
 
 	const glm::vec3 &getPosition() const;
 	const glm::vec3 &getRotation() const;
 	const glm::vec3 &getScale() const;
 
 	template<typename Type>
-	const ShaderUniform<Type> *getShaderUniform(const std::string &name)
+	const ObjectShaderUniform<Type> *getObjectUniform(const std::string &name)
 	{
-		return (ShaderUniform<Type>*)uniforms[name];
+		return shader->getObjectUniform<Type>(name);
 	}
 
 	template<typename Type>
-	void setShaderUniformVal(const std::string &name, const Type &val)
+	const ObjectShaderUniform<Type> *getObjectUniformVal(const std::string &name)
 	{
-		if(uniforms.find(name) == uniforms.end())
-		{
-			uniforms[name] = (IShaderUniform *)new ShaderUniform<Type>(name, val);
-		}
-		((ShaderUniform<Type>*)uniforms[name])->setValue(*shader, val);
+		return shader->getObjectUniformVal<Type>(name, rObjectID);
+	}
+
+	template<typename Type>
+	void setObjectUniformVal(const std::string &name, const Type &val)
+	{
+		shader->setObjectUniform<Type>(name, val, rObjectID);
 	}
 
 	void setPosition(const glm::vec3 &position);
@@ -72,7 +75,7 @@ public:
 
 
 	const glm::mat4 &getModel(bool forcedUpdate = false);
-	void updateMVP(FreeCamera &camera);
+	void updateMVP(FreeCamera &camera, bool forced = false);
 
-	void draw(FreeCamera &camera);
+	void draw(FreeCamera &camera, bool forced = false);
 };

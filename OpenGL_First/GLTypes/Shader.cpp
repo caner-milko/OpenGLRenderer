@@ -71,45 +71,45 @@ int32_t Shader::getUniformLocation(const std::string &name)
 	return loc;
 }
 template<>
-void Shader::setUniform(const std::string &name, const bool &value)
+void Shader::setUniform(const int32_t location, const bool &value)
 {
 	useIfNecessary();
-	glUniform1i(getUniformLocation(name), (int)value);
+	glUniform1i(location, (int)value);
 }template<>
-void Shader::setUniform(const std::string &name, const int &value)
+void Shader::setUniform(const int32_t location, const int &value)
 {
 	useIfNecessary();
-	glUniform1i(getUniformLocation(name), value);
+	glUniform1i(location, value);
 }
 template<>
-void Shader::setUniform(const std::string &name, const glm::vec1 &val)
+void Shader::setUniform(const int32_t location, const glm::vec1 &val)
 {
 	useIfNecessary();
-	glUniform1f(getUniformLocation(name), val.x);
+	glUniform1f(location, val.x);
 }
 template<>
-void Shader::setUniform(const std::string &name, const glm::vec2 &val)
+void Shader::setUniform(const int32_t location, const glm::vec2 &val)
 {
 	useIfNecessary();
-	glUniform2f(getUniformLocation(name), val.x, val.y);
+	glUniform2f(location, val.x, val.y);
 }
 template<>
-void Shader::setUniform(const std::string &name, const glm::vec3 &val)
+void Shader::setUniform(const int32_t location, const glm::vec3 &val)
 {
 	useIfNecessary();
-	glUniform3f(getUniformLocation(name), val.x, val.y, val.z);
+	glUniform3f(location, val.x, val.y, val.z);
 }
 template<>
-void Shader::setUniform(const std::string &name, const glm::vec4 &val)
+void Shader::setUniform(const int32_t location, const glm::vec4 &val)
 {
 	useIfNecessary();
-	glUniform4f(getUniformLocation(name), val.x, val.y, val.z, val.w);
+	glUniform4f(location, val.x, val.y, val.z, val.w);
 }
 template<>
-void Shader::setUniform(const std::string &name, const glm::mat4 &val)
+void Shader::setUniform(const int32_t location, const glm::mat4 &val)
 {
 	useIfNecessary();
-	glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(val));
+	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(val));
 }
 uint32_t Shader::addTexture(const std::string &name, Texture2D *texture, int32_t id)
 {
@@ -148,11 +148,18 @@ Texture2D *Shader::getTexture(const uint32_t textureId)
 void Shader::useTextures()
 {
 	useIfNecessary();
-	std::unordered_map<uint32_t, Texture2D *>::iterator it;
-	for(it = textures.begin(); it != textures.end(); it++)
+	for(auto const &it : textures)
 	{
-		glActiveTexture(GL_TEXTURE0 + it->first);
-		it->second->use();
+		glActiveTexture(GL_TEXTURE0 + it.first);
+		it.second->use();
+	}
+}
+
+void Shader::selectObjectUniforms(const uint32_t object)
+{
+	for(auto it = objectUniforms.begin(); it != objectUniforms.end(); it++)
+	{
+		(it->second)->selectObject(object);
 	}
 }
 
@@ -165,6 +172,15 @@ void Shader::use()
 void Shader::free()
 {
 	glDeleteProgram(id);
+
+	for(auto const &it : shaderUniforms)
+	{
+		delete it.second;
+	}
+	for(auto const &it : objectUniforms)
+	{
+		delete it.second;
+	}
 	release();
 }
 void Shader::release()
@@ -175,7 +191,7 @@ void Shader::release()
 
 GLOBJ_LAST_USED(Shader)
 
-IShaderUniform::IShaderUniform(const std::string &name) : name(name)
+IShaderUniform::IShaderUniform(Shader *const shader, const std::string &name) : shader(shader), name(name)
 {
 }
 
@@ -186,21 +202,21 @@ const std::string &IShaderUniform::getName() const
 }
 
 template<typename Type>
-ShaderUniform<Type>::ShaderUniform(const std::string &name, const Type &val) : IShaderUniform(name), val(val)
+ShaderUniform<Type>::ShaderUniform(Shader *const shader, const std::string &name, const Type &val) : IShaderUniform(shader, name), val(val)
 {
 }
 
 template <typename Type>
-void ShaderUniform<Type>::updateShader(Shader &shader) const
+void ShaderUniform<Type>::updateShader() const
 {
-	shader.setUniform<Type>(getName(), val);
+	shader->setUniform<Type>(getName(), val);
 }
 
 template <typename Type>
-void ShaderUniform<Type>::setValue(Shader &shader, const Type &val)
+void ShaderUniform<Type>::setValue(const Type &val)
 {
 	this->val = val;
-	updateShader(shader);
+	updateShader();
 }
 
 template <typename Type>
@@ -209,10 +225,73 @@ const Type &ShaderUniform<Type>::getValue() const
 	return val;
 }
 
-template ShaderUniform<bool>;
-template ShaderUniform<int>;
-template ShaderUniform<glm::vec1>;
-template ShaderUniform<glm::vec2>;
-template ShaderUniform<glm::vec3>;
-template ShaderUniform<glm::vec4>;
-template ShaderUniform<glm::mat4>;
+template<typename Type>
+ObjectShaderUniform<Type>::ObjectShaderUniform(Shader *const shader, const std::string &name, const Type &defVal) : IShaderUniform(shader, name), lastEditor(-2)
+{
+	specificValues[-2] = defVal;
+}
+
+template<typename Type>
+ObjectShaderUniform<Type>::ObjectShaderUniform(Shader *const shader, const std::string &name, const Type &val, const int32_t object) : IShaderUniform(shader, name), lastEditor(object)
+{
+	specificValues[object] = val;
+	updateShader();
+}
+
+template <typename Type>
+void ObjectShaderUniform<Type>::updateShader() const
+{
+	shader->setUniform<Type>(getName(), specificValues.at(lastEditor));
+}
+
+template <typename Type>
+void ObjectShaderUniform<Type>::setValue(const Type &val, const int32_t object)
+{
+	this->lastEditor = object;
+	specificValues.insert_or_assign(lastEditor, val);
+	updateShader();
+}
+
+template <typename Type>
+void ObjectShaderUniform<Type>::setCurValue(const Type &val)
+{
+	lastEditor = -1;
+	specificValues.insert_or_assign(lastEditor, val);
+	updateShader();
+}
+
+template <typename Type>
+void ObjectShaderUniform<Type>::selectObject(const int32_t object)
+{
+	if(lastEditor != object)
+	{
+		lastEditor = object;
+		updateShader();
+	}
+}
+
+template <typename Type>
+const Type &ObjectShaderUniform<Type>::getValue(const int32_t object) const
+{
+	return specificValues.at(lastEditor);
+}
+
+template <typename Type>
+const Type &ObjectShaderUniform<Type>::getCurValue() const
+{
+	return specificValues.at(lastEditor);
+}
+
+template <typename Type>
+const int32_t ObjectShaderUniform<Type>::getLastEditor() const
+{
+	return lastEditor;
+}
+
+TEMPLATE_UNIFORM(bool)
+TEMPLATE_UNIFORM(int)
+TEMPLATE_UNIFORM(glm::vec1)
+TEMPLATE_UNIFORM(glm::vec2)
+TEMPLATE_UNIFORM(glm::vec3)
+TEMPLATE_UNIFORM(glm::vec4)
+TEMPLATE_UNIFORM(glm::mat4)

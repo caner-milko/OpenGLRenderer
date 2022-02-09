@@ -4,10 +4,20 @@ layout (location = 1) in vec2 uv;
 
 out vec2 texCoords;
 
-uniform mat4 MVP;
+struct Model {
+    mat4 MVP;
+    mat4 M;
+    mat4 V;
+    mat4 P;
+    mat4 VP;
+    mat4 MV;
+    mat4 TIM;
+};
+
+uniform Model model;
 
 void main()
 {
-    gl_Position = MVP * vec4(aPos, 1.0f);
+    gl_Position = model.MVP * vec4(aPos, 1.0f);
     texCoords = uv;
 }

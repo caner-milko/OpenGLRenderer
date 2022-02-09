@@ -5,13 +5,21 @@ layout (location = 1) in vec3 aNormal;
 out vec3 Normal;
 out vec3 FragPos;
 
-uniform mat4 MVP;
-uniform mat4 M;
-uniform mat4 TIM;
+struct Model {
+    mat4 MVP;
+    mat4 M;
+    mat4 V;
+    mat4 P;
+    mat4 VP;
+    mat4 MV;
+    mat4 TIM;
+};
+
+uniform Model model;
 
 void main()
 {
-    gl_Position = MVP * vec4(aPos, 1.0);
-    FragPos = vec3(M * vec4(aPos, 1.0));
-    Normal =mat3( TIM ) * aNormal;
+    gl_Position = model.MVP * vec4(aPos, 1.0);
+    FragPos = vec3(model.M * vec4(aPos, 1.0));
+    Normal =mat3( model.TIM ) * aNormal;
 }

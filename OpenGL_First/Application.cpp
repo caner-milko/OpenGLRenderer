@@ -230,25 +230,31 @@ int main()
 	/*---------------------------------------------------*/
 
 
-	RenderObject *odd = renderer->addOddObject(RenderObjectData(), shader, vertices, attributeSizes);
 
 	RenderObject *light = renderer->addOddObject(RenderObjectData(), lightingShader, lightVertices, lightAttributeSizes);
 
 	RenderObject *litObj = renderer->addOddObject(RenderObjectData(), litShader, normalCube, normalAttributeSizes);
 
-	glm::vec3 lightPos = glm::vec3(2.0f, 2.0f, -2.0f);
+	RenderObject *odd = renderer->addOddObject(RenderObjectData(), shader, vertices, attributeSizes);
+
+	glm::vec3 lightPos = glm::vec3(1.0f, 2.0f, -1.0f);
 
 	light->setPosition(lightPos);
 	litObj->setPosition(glm::vec3());
 
-
-
 	glm::vec3 objectColor = glm::vec3(1.0f, 0.5f, 0.31f);
 	glm::vec3 lightColor = glm::vec3(1.0f);
 
-	litObj->setShaderUniformVal("lightPos", lightPos);
-	litObj->setShaderUniformVal("objectColor", objectColor);
-	litObj->setShaderUniformVal("lightColor", lightColor);
+
+	litObj->shader->setShaderUniform("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
+	litObj->shader->setShaderUniform("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
+	litObj->shader->setShaderUniform("material.specular", glm::vec3(0.5f));
+	litObj->shader->setShaderUniform("material.shininess", glm::vec1(32.0f));
+	litObj->shader->setShaderUniform("pointLight.ambient", glm::vec3(1.0f));
+	litObj->shader->setShaderUniform("pointLight.diffuse", glm::vec3(1.0f));
+	litObj->shader->setShaderUniform("pointLight.specular", glm::vec3(1.0f));
+
+
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -275,7 +281,7 @@ int main()
 	for(int i = 1; i < cubePositions.size(); i++)
 	{
 		glm::vec3 pos = cubePositions[i];
-		RenderObject *ro = renderer->cloneObject(odd->rObjetID);
+		RenderObject *ro = renderer->cloneObject(odd->rObjectID);
 
 		ro->setPosition(pos);
 		objects.push_back(ro);
@@ -293,10 +299,12 @@ int main()
 
 		double sinTime = glm::sin(currentFrame);
 
+		glm::vec3 lightOffset = glm::vec3(0.0f, glm::cos(currentFrame) * 3, sinTime * 3);
 
-		//litObj->setRotation(glm::vec3(0, glm::radians(180 * glm::cos(0.3 * currentFrame)), 0.0f));
-		//litObj->setPosition(glm::vec3(glm::sin(currentFrame * 0.3f) * 5.0, 0.0f, 0.0f));
-
+		light->setPosition(lightPos + lightOffset);
+		litObj->setRotation(glm::vec3(0, glm::radians(180 * glm::cos(0.3 * currentFrame)), 0.0f));
+		litObj->setPosition(glm::vec3(glm::sin(currentFrame * 0.3f) * 5.0, 0.0f, 0.0f));
+		litObj->shader->setShaderUniform("pointLight.lightPos", lightPos + lightOffset);
 
 		for(int i = 0; i < objects.size(); i++)
 		{

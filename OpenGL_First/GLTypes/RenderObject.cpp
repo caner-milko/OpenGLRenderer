@@ -6,15 +6,21 @@ RenderObjectData::RenderObjectData(BufferAccessType accessType, BufferCallType c
 {
 }
 
-RenderObject::RenderObject(uint32_t id, RenderObjectData objectParams, Shader *shader, VertexBuffer *vtxBuffer, VertexArray *vtxArray) : rObjetID(id), objectParams(objectParams), shader(shader), vtxBuffer(vtxBuffer), vtxArray(vtxArray), elementBuffer(nullptr)
+RenderObject::RenderObject(uint32_t id, RenderObjectData objectParams, Shader *const shader, VertexBuffer *const vtxBuffer, VertexArray *const vtxArray) : rObjectID(id), objectParams(objectParams), shader(shader), vtxBuffer(vtxBuffer), vtxArray(vtxArray), elementBuffer(nullptr)
 {
 }
-RenderObject::RenderObject(uint32_t id, RenderObjectData objectParams, Shader *shader, VertexBuffer *vtxBuffer, VertexArray *vtxArray, ElementBuffer *elementBuffer) : rObjetID(id), objectParams(objectParams), shader(shader), vtxBuffer(vtxBuffer), vtxArray(vtxArray), elementBuffer(elementBuffer)
+RenderObject::RenderObject(uint32_t id, RenderObjectData objectParams, Shader *const shader, VertexBuffer *vtxBuffer, VertexArray *const vtxArray, ElementBuffer *const elementBuffer) : rObjectID(id), objectParams(objectParams), shader(shader), vtxBuffer(vtxBuffer), vtxArray(vtxArray), elementBuffer(elementBuffer)
 {
 }
-RenderObject::RenderObject(uint32_t id, const RenderObject &from) : shader(from.shader), vtxBuffer(from.vtxBuffer), vtxArray(from.vtxArray), elementBuffer(from.elementBuffer), rObjetID(id), uniforms(from.uniforms), objectParams(from.objectParams)
+RenderObject::RenderObject(uint32_t id, const RenderObject &from) : shader(from.shader), vtxBuffer(from.vtxBuffer), vtxArray(from.vtxArray), elementBuffer(from.elementBuffer), rObjectID(id), objectParams(from.objectParams)
 {
 }
+
+bool RenderObject::hasElementBuffer() const
+{
+	return elementBuffer == nullptr;
+}
+
 
 const glm::vec3 &RenderObject::getPosition() const
 {
@@ -55,12 +61,12 @@ const glm::mat4 &RenderObject::getModel(bool forcedUpdate)
 	return model;
 }
 
-void RenderObject::updateMVP(FreeCamera &camera)
+void RenderObject::updateMVP(FreeCamera &camera, bool forced)
 {
-	getModel();
-	bool diffModel = changedModel || model != getShaderUniform<glm::mat4>("MVP")->getValue();
-	if(!(camera.isVPUpdated() || diffModel))
+	bool diffModel = forced || changedModel || getObjectUniform<glm::mat4>("model.MVP")->getLastEditor() != rObjectID;
+	if(!(camera.isVPUpdated() || diffModel || forced))
 		return;
+	getModel();
 	const glm::mat4 &VP = camera.getVPMatrix();
 	const glm::mat4 &V = camera.getViewMatrix();
 	const glm::mat4 &P = camera.getProjectionMatrix();
@@ -68,25 +74,30 @@ void RenderObject::updateMVP(FreeCamera &camera)
 	glm::mat4 MV = V * model;
 	if(diffModel)
 	{
-		setShaderUniformVal("M", model);
+		setObjectUniformVal("model.M", model);
 		const glm::mat4 inverseModel = glm::inverse(model);
-		setShaderUniformVal("IM", inverseModel);
-		setShaderUniformVal("TIM", glm::transpose(inverseModel));
+		setObjectUniformVal("model.IM", inverseModel);
+		setObjectUniformVal("model.TIM", glm::transpose(inverseModel));
 	}
-	setShaderUniformVal("MVP", MVP);
-	setShaderUniformVal("MV", MV);
-	if(camera.isVPUpdated())
+
+	setObjectUniformVal("model.MVP", MVP);
+	setObjectUniformVal("model.MV", MV);
+	if(forced || camera.isVPUpdated())
 	{
-		setShaderUniformVal("P", P);
-		setShaderUniformVal("VP", VP);
-		setShaderUniformVal("viewPos", camera.getCameraPos());
+		shader->setShaderUniform("model.P", P);
+		shader->setShaderUniform("model.VP", VP);
+		shader->setShaderUniform("model.V", V);
+		shader->setShaderUniform("camera.viewPos", camera.getCameraPos());
 	}
 	changedModel = false;
 }
 
-void RenderObject::draw(FreeCamera &camera)
+void RenderObject::draw(FreeCamera &camera, bool forced)
 {
-	updateMVP(camera);
+	shader->use();
+	updateMVP(camera, forced || first);
+	first = false;
+	shader->selectObjectUniforms(rObjectID);
 	vtxArray->useIfNecessary();
 	if(elementBuffer != nullptr)
 	{

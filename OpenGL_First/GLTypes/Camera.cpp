@@ -3,7 +3,6 @@
 
 FreeCamera::FreeCamera(const glm::vec3 &cameraPos, float yaw, float pitch, float fov) : cameraPos(cameraPos), cameraUp(0.0f, 1.0f, 0.0f), yaw(yaw), pitch(pitch), fov(fov)
 {
-	updateCameraDir(true);
 	updateMatrices(true);
 }
 
@@ -113,10 +112,9 @@ void FreeCamera::updateCameraDir(bool forced)
 		dir.z = glm::sin(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
 	}
 }
-
 const glm::mat4 &FreeCamera::updateMatrices(bool forced)
 {
-	updateCameraDir();
+	updateCameraDir(forced);
 	if(changedView || forced)
 	{
 		view = glm::lookAt(cameraPos, cameraPos + dir, cameraUp);
