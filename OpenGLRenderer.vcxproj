@@ -18,11 +18,36 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dependencies\compile\glad.c" />
+    <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\GLTypes\Camera.cpp" />
+    <ClCompile Include="src\GLTypes\ElementBuffer.cpp" />
+    <ClCompile Include="src\GLTypes\Renderer.cpp" />
+    <ClCompile Include="src\GLTypes\RenderObject.cpp" />
+    <ClCompile Include="src\GLTypes\Shader.cpp" />
+    <ClCompile Include="src\GLTypes\Texture2D.cpp" />
+    <ClCompile Include="src\GLTypes\VertexArray.cpp" />
+    <ClCompile Include="src\GLTypes\VertexBuffer.cpp" />
+    <ClCompile Include="src\Utils\FileUtils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\includes\GLTypes\Camera.h" />
+    <ClInclude Include="src\includes\GLTypes\ElementBuffer.h" />
+    <ClInclude Include="src\includes\GLTypes\GLObject.h" />
+    <ClInclude Include="src\includes\GLTypes\Renderer.h" />
+    <ClInclude Include="src\includes\GLTypes\RenderObject.h" />
+    <ClInclude Include="src\includes\GLTypes\Shader.h" />
+    <ClInclude Include="src\includes\GLTypes\Texture.h" />
+    <ClInclude Include="src\includes\GLTypes\VertexArray.h" />
+    <ClInclude Include="src\includes\GLTypes\VertexBuffer.h" />
+    <ClInclude Include="src\includes\Utils\FileUtils.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{a1cd50b4-4ae8-4388-9d1a-4b26dade12d2}</ProjectGuid>
-    <RootNamespace>OpenGLFirst</RootNamespace>
+    <ProjectGuid>{5a2a30eb-4bb4-49ff-8c8b-52c6ab607456}</ProjectGuid>
+    <RootNamespace>OpenGLRenderer</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -72,15 +97,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>G:\graphics\opengl\dependencies\include;$(IncludePath)</IncludePath>
-    <LibraryPath>G:\graphics\opengl\dependencies\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)dependencies\include;$(IncludePath);$(ProjectDir)includes</IncludePath>
+    <IncludePath>$(ProjectDir)src\includes;$(ProjectDir)dependencies\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)dependencies\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -96,7 +119,6 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -144,31 +166,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="Application.cpp" />
-    <ClCompile Include="dependencies\compile\glad.c" />
-    <ClCompile Include="GLTypes\Camera.cpp" />
-    <ClCompile Include="GLTypes\ElementBuffer.cpp" />
-    <ClCompile Include="GLTypes\Renderer.cpp" />
-    <ClCompile Include="GLTypes\RenderObject.cpp" />
-    <ClCompile Include="GLTypes\VertexArray.cpp" />
-    <ClCompile Include="GLTypes\VertexBuffer.cpp" />
-    <ClInclude Include="includes\GLTypes\ElementBuffer.h" />
-    <ClCompile Include="Utils\FileUtils.cpp" />
-    <ClCompile Include="GLTypes\Texture2D.cpp" />
-    <ClCompile Include="GLTypes\Shader.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="includes\GLTypes\Camera.h" />
-    <ClInclude Include="includes\GLTypes\GLObject.h" />
-    <ClInclude Include="includes\GLTypes\Renderer.h" />
-    <ClInclude Include="includes\GLTypes\RenderObject.h" />
-    <ClInclude Include="includes\GLTypes\VertexArray.h" />
-    <ClInclude Include="includes\GLTypes\VertexBuffer.h" />
-    <ClInclude Include="includes\Utils\FileUtils.h" />
-    <ClInclude Include="includes\GLTypes\Shader.h" />
-    <ClInclude Include="includes\GLTypes\Texture.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

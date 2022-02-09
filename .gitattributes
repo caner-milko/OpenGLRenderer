@@ -62,4 +62,4 @@
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
 
-OpenGL_First/dependencies/* linguist-vendored
+dependencies/* linguist-vendored

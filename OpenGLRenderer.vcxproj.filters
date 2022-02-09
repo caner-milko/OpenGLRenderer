@@ -13,39 +13,36 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\Shaders">
-      <UniqueIdentifier>{eb4f0023-b99f-487c-9f80-6a3b404bfc86}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Application.cpp">
+    <ClCompile Include="src\GLTypes\Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GLTypes\Shader.cpp">
+    <ClCompile Include="src\GLTypes\ElementBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Utils\FileUtils.cpp">
+    <ClCompile Include="src\GLTypes\Renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GLTypes\Texture2D.cpp">
+    <ClCompile Include="src\GLTypes\RenderObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GLTypes\Camera.cpp">
+    <ClCompile Include="src\GLTypes\Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GLTypes\VertexBuffer.cpp">
+    <ClCompile Include="src\GLTypes\Texture2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GLTypes\VertexArray.cpp">
+    <ClCompile Include="src\GLTypes\VertexArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GLTypes\ElementBuffer.cpp">
+    <ClCompile Include="src\GLTypes\VertexBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GLTypes\Renderer.cpp">
+    <ClCompile Include="src\Utils\FileUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GLTypes\RenderObject.cpp">
+    <ClCompile Include="src\Application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="dependencies\compile\glad.c">
@@ -53,35 +50,35 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="includes\GLTypes\Shader.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="includes\Utils\FileUtils.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="includes\GLTypes\Texture.h">
+    <ClInclude Include="src\includes\GLTypes\Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes\GLTypes\Camera.h">
+    <ClInclude Include="src\includes\GLTypes\ElementBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes\GLTypes\VertexBuffer.h">
+    <ClInclude Include="src\includes\GLTypes\GLObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes\GLTypes\VertexArray.h">
+    <ClInclude Include="src\includes\GLTypes\Renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes\GLTypes\GLObject.h">
+    <ClInclude Include="src\includes\GLTypes\RenderObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes\GLTypes\Renderer.h">
+    <ClInclude Include="src\includes\GLTypes\Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes\GLTypes\RenderObject.h">
+    <ClInclude Include="src\includes\GLTypes\Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes\GLTypes\ElementBuffer.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="src\includes\GLTypes\VertexArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\includes\GLTypes\VertexBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\includes\Utils\FileUtils.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
