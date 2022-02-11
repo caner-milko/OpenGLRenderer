@@ -5,8 +5,8 @@ A custom OpenGL Renderer written in C++ using Visual Studio 2019 while I go thro
 | :-------------: | :-----:|
 | 3D Renderer Base   | **IMPLEMENTED** |
 | 2D Textures   | **IMPLEMENTED** |
-| Lighting   | **WORKING ON** |
-| Mesh Importing   | ~~**NOT IMPLEMENTED**~~ |
+| Lighting   | **IMPLEMENTED** |
+| Mesh Importing   | **WORKING ON** |
 | Shadows   | ~~**NOT IMPLEMENTED**~~ |
 | Physically Based Rendering(PBR)   | ~~**NOT IMPLEMENTED**~~ |
 | Text Rendering   | ~~**NOT IMPLEMENTED**~~ |
@@ -16,8 +16,8 @@ A custom OpenGL Renderer written in C++ using Visual Studio 2019 while I go thro
 | LearnOpenGL        | Status  |
 | :-------------: | :-----:|
 | [Getting Started](https://learnopengl.com/Getting-started/OpenGL)   | **COMPLETE** |
-| [Lighting](https://learnopengl.com/Lighting/Colors)   | **CURRENT STATUS** |
-| [Model Loading](https://learnopengl.com/Model-Loading/Assimp)   | ~~**NOT IMPLEMENTED**~~ |
+| [Lighting](https://learnopengl.com/Lighting/Colors)   | **COMPLETE** |
+| [Model Loading](https://learnopengl.com/Model-Loading/Assimp)   | **CURRENT STATUS** |
 | [Advanced OpenGL](https://learnopengl.com/Advanced-OpenGL/Depth-testing)   | ~~**NOT IMPLEMENTED**~~ |
 | [Advanced Lighting](https://learnopengl.com/Advanced-Lighting/Advanced-Lighting)   | ~~**NOT IMPLEMENTED**~~ |
 | [PBR](https://learnopengl.com/PBR/Theory)   | ~~**NOT IMPLEMENTED**~~ |
