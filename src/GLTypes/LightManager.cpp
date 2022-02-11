@@ -11,24 +11,33 @@ template<typename Type>
 LightType<Type>::LightType(const std::string &typeName, const uint32_t maxLightCount, std::vector<Shader *> *const litShaders) : ILightType(typeName, maxLightCount, litShaders)
 {
 	LightType<Type>::singleton = this;
+	lights.reserve(maxLightCount);
+	for(uint32_t i = 0; i < maxLightCount; i++)
+	{
+		lights.push_back(new Type(i, typeName, litShaders));
+		((Light *)lights[i])->free();
+	}
 }
 
 template<typename Type>
 void LightType<Type>::updateTransforms()
 {
-	for(auto &it : lights)
-		((Light *)it.second)->updateTransforms();
+	for(auto &light : lights)
+		((Light *)light)->updateTransforms();
 }
 
+
 template<typename Type>
-Type *LightType<Type>::addLight()
+Type *LightType<Type>::reserveLight()
 {
 	int32_t suitable = -1;
-	for(int32_t i = 0; i < (int32_t)maxLightCount; i++)
+	Type *selected = nullptr;
+	for(uint32_t i = 0; i < maxLightCount; i++)
 	{
-		if(lights.find(i) == lights.end())
+		if(!((Light *)lights[i])->isActive())
 		{
 			suitable = i;
+			selected = lights[i];
 			break;
 		}
 	}
@@ -36,21 +45,17 @@ Type *LightType<Type>::addLight()
 	if(suitable == -1)
 	{
 		std::cout << "No available light slot for light type: " << typeName << std::endl;
-		return nullptr;
 	}
-
-	Type *light = new Type(suitable, typeName, litShaders);
-	lights.insert_or_assign(suitable, light);
-	return light;
+	return selected;
 }
 
 template<typename Type>
 void LightType<Type>::free()
 {
-	for(auto &it : lights)
+	for(auto &light : lights)
 	{
-		((Light *)it.second)->free();
-		delete it.second;
+		((Light *)light)->free();
+		delete light;
 	}
 	lights.clear();
 }

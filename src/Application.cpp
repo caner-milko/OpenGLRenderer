@@ -233,19 +233,32 @@ int main()
 
 
 	RenderObject *lightObj = renderer->addOddObject(RenderObjectData(), lightingShader, lightVertices, lightAttributeSizes);
-	renderer->lightManager->getLightType<PointLight>("pointLight", 5);
-	PointLight *light = renderer->lightManager->addLight<PointLight>("pointLight");
-	light->setup(glm::vec3(0.1f));
-
+	renderer->lightManager->createLightType<PointLight>("pointLight", 5);
+	renderer->lightManager->createLightType<DirectionalLight>("directionalLight", 3);
+	renderer->lightManager->createLightType<SpotLight>("spotLight", 5);
+	PointLight *light = renderer->lightManager->reserveLight<PointLight>("pointLight");
+	SpotLight *spotLight = renderer->lightManager->reserveLight<SpotLight>("spotLight");
+	DirectionalLight *dirLight = renderer->lightManager->reserveLight<DirectionalLight>("directionalLight");
+	dirLight->setup(glm::vec3(0.3f), glm::vec3(0.3f), glm::vec3(1.0f));
+	RenderObject *spotLightObj = renderer->addOddObject(RenderObjectData(), lightingShader, lightVertices, lightAttributeSizes);
+	light->setup();
+	spotLight->setup();
 	RenderObject *litObj = renderer->addOddObject(RenderObjectData(), litShader, normalCube, normalAttributeSizes);
 
 	RenderObject *odd = renderer->addOddObject(RenderObjectData(), shader, vertices, attributeSizes);
 
 	glm::vec3 lightPos = glm::vec3(1.0f, 2.0f, -1.0f);
-
 	light->setPosition(lightPos);
 	lightObj->setPosition(lightPos);
+	glm::vec3 spotLightPos = glm::vec3(-4.0f, 0.0f, 0.0f);
+
+	spotLight->setPosition(spotLightPos);
+	spotLightObj->setPosition(spotLightPos);
+
+
 	litObj->setPosition(glm::vec3());
+
+	litObj->setScale(glm::vec3(2.0f));
 
 	glm::vec3 objectColor = glm::vec3(1.0f, 0.5f, 0.31f);
 	glm::vec3 lightColor = glm::vec3(1.0f);
@@ -306,8 +319,13 @@ int main()
 
 		light->setPosition(lightPos + lightOffset);
 		lightObj->setPosition(lightPos + lightOffset);
-		litObj->setRotation(glm::vec3(0, glm::radians(180 * glm::cos(0.3 * currentFrame)), 0.0f));
-		litObj->setPosition(glm::vec3(glm::sin(currentFrame * 0.3f) * 5.0, 0.0f, 0.0f));
+		//litObj->setRotation(glm::vec3(0, glm::radians(180 * glm::cos(0.3 * currentFrame)), 0.0f));
+		//litObj->setPosition(glm::vec3(0.0f, 0.0f, glm::sin(currentFrame * 0.3f) * 5.0));
+
+		spotLight->setYaw(-glm::sin(currentFrame / 3) * 180.0f);
+		spotLightObj->setRotation(glm::vec3(glm::sin(currentFrame / 3) * glm::pi<float>(), 0.0f, 0.0f));
+
+		dirLight->setPitch(180 * glm::cos(0.8f + currentFrame));
 
 		for(int i = 0; i < objects.size(); i++)
 		{

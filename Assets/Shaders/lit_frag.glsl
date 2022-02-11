@@ -78,6 +78,7 @@ uniform DirectionalLight[DIRECTIONAL_LIGHT_COUNT] directionalLight;
 uniform SpotLight[SPOT_LIGHT_COUNT] spotLight;
 
 vec3 calculatePointLights(PointLight light, vec3 ambientCol, vec3 difCol, vec3 specCol, vec3 normal, vec3 viewDir, vec3 fragPos) {
+    
     vec3 lightDir = normalize(light.lightPos - fragPos);
     // diffuse shading
     float diff = max(dot(normal, lightDir), 0.0);
@@ -91,7 +92,7 @@ vec3 calculatePointLights(PointLight light, vec3 ambientCol, vec3 difCol, vec3 s
     vec3 ambient  = light.ambient  * ambientCol;
     vec3 diffuse  = light.diffuse  * diff * difCol;
     vec3 specular = light.specular * spec * specCol;
-    return clamp((ambient + diffuse + specular) * attenuation, 0.0, 1.0);
+    return (ambient + diffuse + specular) * attenuation;
 
 }
 
@@ -109,7 +110,7 @@ vec3 calculateDirectionalLights(DirectionalLight light, vec3 ambientCol, vec3 di
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
     vec3 specular = light.specular * spec * specCol;  
 
-    return clamp(ambient + diffuse + specular, 0.0, 1.0);
+    return ambient + diffuse + specular;
 }
 
 vec3 calculateSpotLights(SpotLight light,  vec3 ambientCol, vec3 difCol, vec3 specCol, vec3 normal, vec3 viewDir, vec3 fragPos) {
@@ -134,7 +135,7 @@ vec3 calculateSpotLights(SpotLight light,  vec3 ambientCol, vec3 difCol, vec3 sp
     diffuse *= intensity;
     specular *= intensity;
 
-    return clamp((ambient+ diffuse + specular) * attenuation, 0.0, 1.0);
+    return (ambient+ diffuse + specular) * attenuation;
 }
 
 void main()

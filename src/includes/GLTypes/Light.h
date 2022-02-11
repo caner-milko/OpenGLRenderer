@@ -8,8 +8,9 @@ class Light : public Transform
 {
 private:
 	const uint32_t id;
-	glm::vec3 ambient = glm::vec3(0.05f), diffuse = glm::vec3(1.0f), specular = glm::vec3(1.0f);
+	glm::vec3 ambient = glm::vec3(0.0f), diffuse = glm::vec3(0.0f), specular = glm::vec3(0.0f);
 	const std::string arrayPrefix;
+	bool active = false;
 public:
 	const std::vector<Shader *> *const litShaders;
 	Light(uint32_t id, const std::string &arrayPrefix, const std::vector<Shader *> *const litShaders);
@@ -19,10 +20,8 @@ public:
 	template<typename Type>
 	void update(const std::string &name, const Type &val) const
 	{
-		std::cout << id << std::endl;
 		for(auto &shader : *litShaders)
 		{
-
 			shader->setShaderUniform<Type>(getNameFor(name), val);
 		}
 	}
@@ -33,13 +32,17 @@ public:
 	float getYaw() const;
 	float getPitch() const;
 	const glm::vec3 getDirection() const;
+	bool isActive() const;
 
+	void activate();
 	void setAmbient(const glm::vec3 &ambient);
 	void setDiffuse(const glm::vec3 &diffuse);
 	void setSpecular(const glm::vec3 &specular);
 	void setYaw(const float yaw);
 	void setPitch(const float pitch);
+
 	virtual void free();
+
 	/*
 	Use getDirection() to get direction of the light,
 	Use Transform::getRotation() if it is a must
@@ -81,7 +84,7 @@ private:
 	float cutoff = 0.0f, outerCutoff = 0.0f;
 public:
 	SpotLight(uint32_t id, const std::string &arrayPrefix, const std::vector<Shader *> *const litShaders);
-	void setup(glm::vec3 ambient = glm::vec3(0.05f), glm::vec3 diffuse = glm::vec3(1.0f), glm::vec3 specular = glm::vec3(1.0f), float constant = 1.0f, float linear = 0.09f, float quadratic = 0.032f, float cutoff = 20.0f, float outerCutoff = 21.0f);
+	void setup(glm::vec3 ambient = glm::vec3(0.05f), glm::vec3 diffuse = glm::vec3(1.0f), glm::vec3 specular = glm::vec3(1.0f), float constant = 1.0f, float linear = 0.09f, float quadratic = 0.032f, float cutoff = 20.0f, float outerCutoff = 25.0f);
 	const float getCutoff() const;
 	const float getOuterCutoff() const;
 

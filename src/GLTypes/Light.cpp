@@ -8,6 +8,7 @@ Light::Light(uint32_t id, const std::string &arrayPrefix, const std::vector<Shad
 
 void Light::setup(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular)
 {
+	active = true;
 	setAmbient(ambient);
 	setDiffuse(diffuse);
 	setSpecular(specular);
@@ -66,6 +67,15 @@ const glm::vec3 Light::getDirection() const
 	float sinPitch = glm::sin(glm::radians(getPitch()));
 	return glm::vec3(cosPitch * cosYaw, sinPitch, cosPitch * sinYaw);
 }
+bool Light::isActive() const
+{
+	return active;
+}
+
+void Light::activate()
+{
+	active = true;
+}
 void Light::setAmbient(const glm::vec3 &ambient)
 {
 	this->ambient = ambient;
@@ -85,6 +95,7 @@ void Light::setSpecular(const glm::vec3 &specular)
 void Light::setYaw(const float yaw)
 {
 	Transform::setRotation(glm::vec3(yaw, getPitch(), 0.0f));
+	std::cout << "x: " << getDirection().x << " y: " << getDirection().y << " z: " << getDirection().z << std::endl;
 	update("lightDir", getDirection());
 }
 void Light::setPitch(const float pitch)
@@ -95,6 +106,7 @@ void Light::setPitch(const float pitch)
 
 void Light::free()
 {
+	active = false;
 	glm::vec3 zeroVec = glm::vec3(0.0f);
 	setAmbient(zeroVec);
 	setDiffuse(zeroVec);
@@ -102,7 +114,6 @@ void Light::free()
 	setPosition(zeroVec);
 	Transform::setRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
 }
-
 
 
 PointLight::PointLight(uint32_t id, const std::string &arrayPrefix, const std::vector<Shader *> *const litShaders) : Light(id, arrayPrefix, litShaders)
@@ -145,7 +156,7 @@ void PointLight::setQuadratic(float quadratic)
 }
 void PointLight::free()
 {
-	setConstant(0.0f);
+	setConstant(1.0f);
 	setLinear(0.0f);
 	setQuadratic(0.0f);
 	Light::free();
@@ -178,12 +189,12 @@ const float SpotLight::getOuterCutoff() const
 void SpotLight::setCutoff(const float cutoff)
 {
 	this->cutoff = cutoff;
-	update("cutoff", cutoff);
+	update("cutoff", glm::cos(glm::radians(cutoff)));
 }
 void SpotLight::setOuterCutoff(const float outerCutoff)
 {
 	this->outerCutoff = outerCutoff;
-	update("outerCutoff", outerCutoff);
+	update("outerCutoff", glm::cos(glm::radians(outerCutoff)));
 }
 void SpotLight::free()
 {

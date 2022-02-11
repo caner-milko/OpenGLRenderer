@@ -19,9 +19,9 @@ class LightType : public ILightType
 {
 public:
 	static LightType<Type> *singleton;
-	std::unordered_map<uint32_t, Type *> lights;
+	std::vector<Type *> lights;
 	LightType(const std::string &typeName, const uint32_t maxLightCount, std::vector<Shader *> *const litShaders);
-	Type *addLight();
+	Type *reserveLight();
 	void updateTransforms() override;
 	void free() override;
 };
@@ -33,10 +33,11 @@ private:
 public:
 	std::vector<Shader *> litShaders;
 	template<typename Type>
-	LightType<Type> *getLightType(const std::string &lightName, uint32_t maxLightCount)
+	LightType<Type> *createLightType(const std::string &lightName, uint32_t maxLightCount)
 	{
 		if(LightType<Type>::singleton != nullptr)
 		{
+			std::cout << "Light type " + lightName + " already exists, returning singleton" << std::endl;
 			return LightType<Type>::singleton;
 		}
 		if(maxLightCount == 0)
@@ -49,10 +50,25 @@ public:
 		return lightType;
 	}
 	template<typename Type>
-	Type *addLight(const std::string &lightType)
+	LightType<Type> *getLightType(const std::string &lightName)
 	{
-		LightType<Type> *type = getLightType<Type>(lightType, 0);
-		return type->addLight();
+		if(LightType<Type>::singleton != nullptr)
+		{
+			return LightType<Type>::singleton;
+		}
+
+		std::cout << "Create light type " + lightName + " first." << std::endl;
+		return nullptr;
+
+	}
+	/*
+		Must call light.setup() before using the light
+	*/
+	template<typename Type>
+	Type *reserveLight(const std::string &lightType)
+	{
+		LightType<Type> *type = getLightType<Type>(lightType);
+		return type->reserveLight();
 	}
 	void updateLights();
 	~LightManager();
