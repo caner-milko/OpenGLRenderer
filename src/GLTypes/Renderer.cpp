@@ -6,7 +6,7 @@ uint32_t RendererData::getClearMask()
 }
 
 Renderer *Renderer::renderer;
-Renderer::Renderer(RendererData data) : camera(new FreeCamera(glm::vec3(0.0f))), data(data)
+Renderer::Renderer(RendererData data) : camera(new FreeCamera(glm::vec3(0.0f))), data(data), lightManager(new LightManager())
 {
 	renderer = this;
 	if(data.depthTest)
@@ -73,13 +73,14 @@ RenderObject *Renderer::cloneObject(uint32_t clone)
 	return clonedObject;
 }
 
-
 void Renderer::draw()
 {
 	glClearColor(data.resetCol[0], data.resetCol[1], data.resetCol[2], data.resetCol[3]);
 	glClear(data.getClearMask());
 
 	camera->updateMatrices();
+
+	lightManager->updateLights();
 
 	for(auto const &ro : renderObjects)
 	{
@@ -91,7 +92,8 @@ void Renderer::draw()
 
 Renderer::~Renderer()
 {
-	std::cout << "Renderer delete" << std::endl;
+	std::cout << "Renderer deleted." << std::endl;
+	delete lightManager;
 	delete camera;
 	for(auto const &ro : renderObjects)
 	{

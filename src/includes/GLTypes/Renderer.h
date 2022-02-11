@@ -8,7 +8,7 @@
 #include <GLTypes/ElementBuffer.h>
 #include <GLTypes/VertexBuffer.h>
 #include <GLTypes/VertexArray.h>
-
+#include <GLTypes/LightManager.h>
 
 struct RendererData
 {
@@ -29,8 +29,9 @@ class Renderer
 	std::vector<RenderObject *> renderObjects;
 	RendererData data;
 public:
-	FreeCamera *camera;
 	static Renderer *renderer;
+	FreeCamera *camera;
+	LightManager *lightManager;
 
 	Renderer(RendererData data);
 

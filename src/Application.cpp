@@ -17,17 +17,17 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
-double texOffsetx = 0.0f, texOffsety = 0.0f;
+float texOffsetx = 0.0f, texOffsety = 0.0f;
 
-double deltaTime = 0.0f;	// Time between current frame and last frame
-double lastFrame = 0.0f; // Time of last frame
+float deltaTime = 0.0f;	// Time between current frame and last frame
+float lastFrame = 0.0f; // Time of last frame
 
 FreeCamera *camera;
 
 glm::vec3 cameraPos(0.0f, 0.0f, 3.0f);
 
 float yaw = -90.0f, pitch = 0.0f;
-double lastX = 400, lastY = 300;
+float lastX = 400, lastY = 300;
 bool firstMouse = true;
 float fov = 45.0f;
 
@@ -226,12 +226,16 @@ int main()
 
 	Shader *litShader = new Shader("./Assets/Shaders/lit_vert.glsl", "./Assets/Shaders/lit_frag.glsl");
 
+	renderer->lightManager->litShaders.push_back(litShader);
 
 	/*---------------------------------------------------*/
 
 
 
-	RenderObject *light = renderer->addOddObject(RenderObjectData(), lightingShader, lightVertices, lightAttributeSizes);
+	RenderObject *lightObj = renderer->addOddObject(RenderObjectData(), lightingShader, lightVertices, lightAttributeSizes);
+	renderer->lightManager->getLightType<PointLight>("pointLight", 5);
+	PointLight *light = renderer->lightManager->addLight<PointLight>("pointLight");
+	light->setup(glm::vec3(0.1f));
 
 	RenderObject *litObj = renderer->addOddObject(RenderObjectData(), litShader, normalCube, normalAttributeSizes);
 
@@ -240,6 +244,7 @@ int main()
 	glm::vec3 lightPos = glm::vec3(1.0f, 2.0f, -1.0f);
 
 	light->setPosition(lightPos);
+	lightObj->setPosition(lightPos);
 	litObj->setPosition(glm::vec3());
 
 	glm::vec3 objectColor = glm::vec3(1.0f, 0.5f, 0.31f);
@@ -250,9 +255,6 @@ int main()
 	litObj->shader->setShaderUniform("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
 	litObj->shader->setShaderUniform("material.specular", glm::vec3(0.5f));
 	litObj->shader->setShaderUniform("material.shininess", glm::vec1(32.0f));
-	litObj->shader->setShaderUniform("pointLight.ambient", glm::vec3(1.0f));
-	litObj->shader->setShaderUniform("pointLight.diffuse", glm::vec3(1.0f));
-	litObj->shader->setShaderUniform("pointLight.specular", glm::vec3(1.0f));
 
 
 
@@ -290,21 +292,22 @@ int main()
 	while(!glfwWindowShouldClose(window))
 	{
 		//input
-		double currentFrame = glfwGetTime();
+		float currentFrame = (float)glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 		processInput(window);
 
 		//change
 
-		double sinTime = glm::sin(currentFrame);
+		float sinTime = glm::sin(currentFrame);
 
 		glm::vec3 lightOffset = glm::vec3(0.0f, glm::cos(currentFrame) * 3, sinTime * 3);
 
+
 		light->setPosition(lightPos + lightOffset);
+		lightObj->setPosition(lightPos + lightOffset);
 		litObj->setRotation(glm::vec3(0, glm::radians(180 * glm::cos(0.3 * currentFrame)), 0.0f));
 		litObj->setPosition(glm::vec3(glm::sin(currentFrame * 0.3f) * 5.0, 0.0f, 0.0f));
-		litObj->shader->setShaderUniform("pointLight.lightPos", lightPos + lightOffset);
 
 		for(int i = 0; i < objects.size(); i++)
 		{
@@ -371,7 +374,7 @@ void processInput(GLFWwindow *window)
 		texOffsetx += 0.05f;
 	}
 
-	const float cameraSpeed = 2.5 * deltaTime;
+	const float cameraSpeed = 2.5f * deltaTime;
 	if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		cameraPos += cameraSpeed * camera->getCameraDir();
 	if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -398,14 +401,14 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos)
 {
 	if(firstMouse) // initially set to true
 	{
-		lastX = xpos;
-		lastY = ypos;
+		lastX = (float)xpos;
+		lastY = (float)ypos;
 		firstMouse = false;
 	}
-	double xoffset = xpos - lastX;
-	double yoffset = lastY - ypos; // reversed since y-coordinates range from bottom to top
-	lastX = xpos;
-	lastY = ypos;
+	float xoffset = (float)xpos - lastX;
+	float yoffset = lastY - (float)ypos; // reversed since y-coordinates range from bottom to top
+	lastX = (float)xpos;
+	lastY = (float)ypos;
 
 	const float sensitivity = 0.1f;
 	xoffset *= sensitivity;

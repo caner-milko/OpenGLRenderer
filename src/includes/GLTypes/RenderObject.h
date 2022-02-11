@@ -3,6 +3,7 @@
 #include <iostream>
 #include <glm/glm.hpp>
 
+#include <GLTypes/Transform.h>
 #include <GLTypes/VertexArray.h>
 #include <GLTypes/VertexBuffer.h>
 #include <GLTypes/ElementBuffer.h>
@@ -22,17 +23,13 @@ struct RenderObjectData
 	RenderObjectData(BufferAccessType accessType = BufferAccessType::STATIC, BufferCallType callType = BufferCallType::DRAW, DrawType drawType = DrawType::TRIANGLES);
 };
 
-class RenderObject
+class RenderObject : public Transform
 {
 
 private:
 
 	bool first = true;
-	bool changedModel = true;
 	glm::mat4 model = glm::mat4(1.0f);
-
-
-	glm::vec3 position = glm::vec3(0.0f), rotation = glm::vec3(0.0f), scale = glm::vec3(1.0f);
 
 public:
 	VertexBuffer *const vtxBuffer;
@@ -46,10 +43,6 @@ public:
 	RenderObject(uint32_t id, const RenderObject &from);
 
 	bool hasElementBuffer() const;
-
-	const glm::vec3 &getPosition() const;
-	const glm::vec3 &getRotation() const;
-	const glm::vec3 &getScale() const;
 
 	template<typename Type>
 	const ObjectShaderUniform<Type> *getObjectUniform(const std::string &name)
@@ -68,11 +61,6 @@ public:
 	{
 		shader->setObjectUniform<Type>(name, val, rObjectID);
 	}
-
-	void setPosition(const glm::vec3 &position);
-	void setRotation(const glm::vec3 &rotation);
-	void setScale(const glm::vec3 &scale);
-
 
 	const glm::mat4 &getModel(bool forcedUpdate = false);
 	void updateMVP(FreeCamera &camera, bool forced = false);

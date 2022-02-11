@@ -22,48 +22,22 @@ bool RenderObject::hasElementBuffer() const
 }
 
 
-const glm::vec3 &RenderObject::getPosition() const
-{
-	return position;
-}
-const glm::vec3 &RenderObject::getRotation() const
-{
-	return rotation;
-}
-const glm::vec3 &RenderObject::getScale() const
-{
-	return scale;
-}
 
-void RenderObject::setPosition(const glm::vec3 &position)
-{
-	this->position = position;
-	changedModel = true;
-}
-void RenderObject::setRotation(const glm::vec3 &rotation)
-{
-	this->rotation = rotation;
-	changedModel = true;
-}
-void RenderObject::setScale(const glm::vec3 &scale)
-{
-	this->scale = scale;
-	changedModel = true;
-}
 
 const glm::mat4 &RenderObject::getModel(bool forcedUpdate)
 {
-	if(!changedModel && !forcedUpdate)
+	if(!isModelChanged() && !forcedUpdate)
 		return model;
-	model = glm::translate(glm::mat4(1.0f), position);
-	model = glm::scale(model, scale);
+	model = glm::translate(glm::mat4(1.0f), getPosition());
+	model = glm::scale(model, getScale());
+	const glm::vec3 &rotation = getRotation();
 	model = model * glm::eulerAngleYZX(rotation.x, rotation.y, rotation.z);
 	return model;
 }
 
 void RenderObject::updateMVP(FreeCamera &camera, bool forced)
 {
-	bool diffModel = forced || changedModel || getObjectUniform<glm::mat4>("model.MVP")->getLastEditor() != rObjectID;
+	bool diffModel = forced || isModelChanged() || getObjectUniform<glm::mat4>("model.MVP")->getLastEditor() != rObjectID;
 	if(!(camera.isVPUpdated() || diffModel || forced))
 		return;
 	getModel();
@@ -82,14 +56,14 @@ void RenderObject::updateMVP(FreeCamera &camera, bool forced)
 
 	setObjectUniformVal("model.MVP", MVP);
 	setObjectUniformVal("model.MV", MV);
-	if(forced || camera.isVPUpdated())
+	if(camera.isVPUpdated() || forced)
 	{
 		shader->setShaderUniform("model.P", P);
 		shader->setShaderUniform("model.VP", VP);
 		shader->setShaderUniform("model.V", V);
 		shader->setShaderUniform("camera.viewPos", camera.getCameraPos());
 	}
-	changedModel = false;
+	setChangedModel(false);
 }
 
 void RenderObject::draw(FreeCamera &camera, bool forced)

@@ -82,6 +82,12 @@ void Shader::setUniform(const int32_t location, const int &value)
 	glUniform1i(location, value);
 }
 template<>
+void Shader::setUniform(const int32_t location, const float &val)
+{
+	useIfNecessary();
+	glUniform1f(location, val);
+}
+template<>
 void Shader::setUniform(const int32_t location, const glm::vec1 &val)
 {
 	useIfNecessary();
@@ -290,6 +296,7 @@ const int32_t ObjectShaderUniform<Type>::getLastEditor() const
 
 TEMPLATE_UNIFORM(bool)
 TEMPLATE_UNIFORM(int)
+TEMPLATE_UNIFORM(float)
 TEMPLATE_UNIFORM(glm::vec1)
 TEMPLATE_UNIFORM(glm::vec2)
 TEMPLATE_UNIFORM(glm::vec3)
