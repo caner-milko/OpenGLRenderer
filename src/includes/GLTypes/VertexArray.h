@@ -1,6 +1,7 @@
 #pragma once
 #include <GLTypes/GLObject.h>
 #include <GLTypes/VertexBuffer.h>
+#include <GLTypes/ElementBuffer.h>
 enum class DrawType
 {
 	TRIANGLES = GL_TRIANGLES, LINES = GL_LINES, POINTS = GL_POINTS
@@ -8,10 +9,10 @@ enum class DrawType
 class VertexArray : public GLObject
 {
 public:
-	const VertexBuffer &buffer;
 
-	VertexArray(const VertexBuffer &buffer);
+	VertexArray();
 
-	void drawArray(DrawType drawType);
+	void drawArray(const VertexBuffer &vertexBuffer, DrawType drawType);
+	void drawElements(const ElementBuffer &elementBuffer, DrawType drawType);
 	GLOBJ_OVERRIDE(VertexArray)
 };

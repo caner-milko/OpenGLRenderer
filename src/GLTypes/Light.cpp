@@ -95,7 +95,6 @@ void Light::setSpecular(const glm::vec3 &specular)
 void Light::setYaw(const float yaw)
 {
 	Transform::setRotation(glm::vec3(yaw, getPitch(), 0.0f));
-	std::cout << "x: " << getDirection().x << " y: " << getDirection().y << " z: " << getDirection().z << std::endl;
 	update("lightDir", getDirection());
 }
 void Light::setPitch(const float pitch)

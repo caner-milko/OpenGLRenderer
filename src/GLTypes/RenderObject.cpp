@@ -6,13 +6,11 @@ RenderObjectData::RenderObjectData(BufferAccessType accessType, BufferCallType c
 {
 }
 
-RenderObject::RenderObject(uint32_t id, RenderObjectData objectParams, Shader *const shader, VertexBuffer *const vtxBuffer, VertexArray *const vtxArray) : rObjectID(id), objectParams(objectParams), shader(shader), vtxBuffer(vtxBuffer), vtxArray(vtxArray), elementBuffer(nullptr)
+RenderObject::RenderObject(uint32_t id, RenderObjectData objectParams, Shader *const shader) : rObjectID(id), objectParams(objectParams), shader(shader)
 {
 }
-RenderObject::RenderObject(uint32_t id, RenderObjectData objectParams, Shader *const shader, VertexBuffer *vtxBuffer, VertexArray *const vtxArray, ElementBuffer *const elementBuffer) : rObjectID(id), objectParams(objectParams), shader(shader), vtxBuffer(vtxBuffer), vtxArray(vtxArray), elementBuffer(elementBuffer)
-{
-}
-RenderObject::RenderObject(uint32_t id, const RenderObject &from) : shader(from.shader), vtxBuffer(from.vtxBuffer), vtxArray(from.vtxArray), elementBuffer(from.elementBuffer), rObjectID(id), objectParams(from.objectParams)
+
+RenderObject::RenderObject(uint32_t id, const RenderObject &from) : rObjectID(id), objectParams(from.objectParams), shader(from.shader), vtxBuffer(from.vtxBuffer), vtxArray(from.vtxArray), elementBuffer(from.elementBuffer)
 {
 }
 
@@ -72,11 +70,53 @@ void RenderObject::draw(FreeCamera &camera, bool forced)
 	updateMVP(camera, forced || first);
 	first = false;
 	shader->selectObjectUniforms(rObjectID);
-	vtxArray->useIfNecessary();
 	if(elementBuffer != nullptr)
 	{
-		elementBuffer->drawElements(objectParams.drawType);
+		vtxArray->drawElements(*elementBuffer, objectParams.drawType);
 		return;
 	}
-	vtxArray->drawArray(objectParams.drawType);
+	vtxArray->drawArray(*vtxBuffer, objectParams.drawType);
+}
+
+const VertexBuffer *RenderObject::getVertexBuffer()
+{
+	return vtxBuffer;
+}
+const VertexArray *RenderObject::getVertexArray()
+{
+	return vtxArray;
+}
+const ElementBuffer *RenderObject::getElementBuffer()
+{
+	return elementBuffer;
+}
+
+SimpleRenderObject::SimpleRenderObject(uint32_t id, RenderObjectData objectParams, Shader *const shader, std::vector<float> vertices, std::vector<uint32_t> attributeSizes) : RenderObject(id, objectParams, shader), vertices(vertices), attributeSizes(attributeSizes)
+{
+}
+SimpleRenderObject::SimpleRenderObject(uint32_t id, RenderObjectData objectParams, Shader *const shader, std::vector<float> vertices, std::vector<uint32_t> attributeSizes, std::vector<uint32_t> indices) : RenderObject(id, objectParams, shader), vertices(vertices), attributeSizes(attributeSizes), indices(indices)
+{
+}
+SimpleRenderObject::SimpleRenderObject(uint32_t id, const SimpleRenderObject &from) : RenderObject(id, from), vertices(from.vertices), attributeSizes(from.attributeSizes), indices(from.indices)
+{
+}
+void SimpleRenderObject::initObject()
+{
+	vtxArray = new VertexArray();
+	vtxBuffer = new VertexBuffer(*vtxArray, vertices, attributeSizes, BufferAccessType::STATIC, BufferCallType::DRAW);
+	if(indices.size() != 0)
+		elementBuffer = new ElementBuffer(indices, BufferAccessType::STATIC, BufferCallType::DRAW);
+}
+
+const std::vector<float> &SimpleRenderObject::getVertices()
+{
+	return vertices;
+}
+const std::vector<uint32_t> &SimpleRenderObject::getAttributeSizes()
+{
+	return attributeSizes;
+}
+const std::vector<uint32_t> &SimpleRenderObject::getIndices()
+{
+	return indices;
 }

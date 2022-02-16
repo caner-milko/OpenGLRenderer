@@ -15,62 +15,31 @@ Renderer::Renderer(RendererData data) : camera(new FreeCamera(glm::vec3(0.0f))),
 	}
 }
 
-RenderObject *Renderer::addOddObject(RenderObjectData data, Shader *shader, const std::vector<float> &vertices, const std::vector<uint32_t> &attributeSizes)
+SimpleRenderObject *Renderer::addOddObject(RenderObjectData data, Shader *shader, const std::vector<float> &vertices, const std::vector<uint32_t> &attributeSizes)
 {
 	uint32_t id = itemCount++;
-	VertexBuffer *vtxBuffer = new VertexBuffer(attributeSizes);
-	VertexArray *vtxArray = new VertexArray(*vtxBuffer);
+	SimpleRenderObject *renderObject = new SimpleRenderObject(id, data, shader, vertices, attributeSizes);
+	renderObject->initObject();
 
-	vtxBuffers[id] = vtxBuffer;
-	vtxArrays[id] = vtxArray;
-
-	vtxArray->useIfNecessary();
-	vtxBuffer->addVertex(vertices);
-
-	vtxBuffer->loadVertices(data.accessType, data.callType);
-
-	vtxBuffer->release();
-	vtxArray->release();
-	RenderObject *renderObject = new RenderObject(id, data, shader, vtxBuffer, vtxArray);
+	vertexBuffers.push_back(renderObject->getVertexBuffer());
+	vertexArrays.push_back(renderObject->getVertexArray());
+	elementBuffers.push_back(renderObject->getElementBuffer());
 
 	renderObjects.push_back(renderObject);
 	return renderObject;
 }
 
-RenderObject *Renderer::addMesh(RenderObjectData data, Shader *shader, const std::vector<float> &vertices, const std::vector<uint32_t> &attributeSizes, const std::vector<uint32_t> &indices)
+SimpleRenderObject *Renderer::addSimpleObject(RenderObjectData data, Shader *shader, const std::vector<float> &vertices, const std::vector<uint32_t> &attributeSizes, const std::vector<uint32_t> &indices)
 {
 	uint32_t id = itemCount++;
-	VertexBuffer *vtxBuffer = new VertexBuffer(attributeSizes);
-	VertexArray *vtxArray = new VertexArray(*vtxBuffer);
-	ElementBuffer *elementBuffer = new ElementBuffer();
-
-	vtxBuffers[id] = vtxBuffer;
-	vtxArrays[id] = vtxArray;
-	elementBuffers[id] = elementBuffer;
-
-	vtxArray->useIfNecessary();
-	vtxBuffer->addVertex(vertices);
-
-	elementBuffer->addTriangles(indices);
-	vtxBuffer->loadVertices(data.accessType, data.callType);
-	elementBuffer->loadElements(data.accessType, data.callType);
-
-	vtxBuffer->release();
-	vtxArray->release();
-	elementBuffer->release();
-	RenderObject *renderObject = new RenderObject(id, data, shader, vtxBuffer, vtxArray, elementBuffer);
+	SimpleRenderObject *renderObject = new SimpleRenderObject(id, data, shader, vertices, attributeSizes, indices);
+	renderObject->initObject();
+	vertexBuffers.push_back(renderObject->getVertexBuffer());
+	vertexArrays.push_back(renderObject->getVertexArray());
+	elementBuffers.push_back(renderObject->getElementBuffer());
 
 	renderObjects.push_back(renderObject);
 	return renderObject;
-}
-
-RenderObject *Renderer::cloneObject(uint32_t clone)
-{
-	uint32_t id = itemCount++;
-	RenderObject *clonedObject = new RenderObject(id, *renderObjects[clone]);
-	renderObjects.push_back(clonedObject);
-
-	return clonedObject;
 }
 
 void Renderer::draw()
@@ -99,17 +68,17 @@ Renderer::~Renderer()
 	{
 		delete ro;
 	}
-	for(auto const &it : vtxBuffers)
+	for(auto &it : vertexBuffers)
 	{
-		delete it.second;
+		delete it;
 	}
-	for(auto const &it : vtxArrays)
+	for(auto &it : vertexArrays)
 	{
-		delete it.second;
+		delete it;
 	}
-	for(auto const &it : elementBuffers)
+	for(auto &it : elementBuffers)
 	{
-		delete it.second;
+		delete it;
 	}
 
 }

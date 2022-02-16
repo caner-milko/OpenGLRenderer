@@ -15,22 +15,22 @@ enum class BufferCallType
 
 };
 
+class VertexArray;
+
 class VertexBuffer : public GLObject
 {
 public:
-	std::vector<float> vertices;
-	std::vector<uint32_t> attributeSizes;
+	const uint32_t vertexCount;
 
-	VertexBuffer(const std::vector<uint32_t> &attributeSizes);
+	VertexBuffer(VertexArray &vertexArray, const std::vector<float> &vertices, const std::vector<uint32_t> &attributeSizes, BufferAccessType accessType, BufferCallType callType);
 
-	void addVertex(const std::vector<float> &vertexAttributes);
+	/*void addVertex(const std::vector<float> &vertexAttributes);
 
-	void loadVertices(BufferAccessType accessType, BufferCallType callType);
+	void loadVertices(BufferAccessType accessType, BufferCallType callType);*/
 
 	//offset of a attribute(not in bytes)
-	uint32_t attributeOffset(uint32_t index) const;
+	static const uint32_t attributeOffset(const std::vector<uint32_t> &attributeSizes, uint32_t index);
 	//total size of attributes(not in bytes)
-	uint32_t stride() const;
-	uint32_t vertexCount() const;
+	static const uint32_t stride(const std::vector<uint32_t> &attributeSizes);
 	GLOBJ_OVERRIDE(VertexBuffer)
 };

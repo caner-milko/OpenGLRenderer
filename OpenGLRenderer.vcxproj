@@ -25,6 +25,7 @@
     <ClCompile Include="src\GLTypes\ElementBuffer.cpp" />
     <ClCompile Include="src\GLTypes\Light.cpp" />
     <ClCompile Include="src\GLTypes\LightManager.cpp" />
+    <ClCompile Include="src\GLTypes\Mesh.cpp" />
     <ClCompile Include="src\GLTypes\Renderer.cpp" />
     <ClCompile Include="src\GLTypes\RenderObject.cpp" />
     <ClCompile Include="src\GLTypes\Shader.cpp" />
@@ -40,11 +41,14 @@
     <ClInclude Include="src\includes\GLTypes\GLObject.h" />
     <ClInclude Include="src\includes\GLTypes\Light.h" />
     <ClInclude Include="src\includes\GLTypes\LightManager.h" />
+    <ClInclude Include="src\includes\GLTypes\Mesh.h" />
+    <ClInclude Include="src\includes\GLTypes\Model.h" />
     <ClInclude Include="src\includes\GLTypes\Renderer.h" />
     <ClInclude Include="src\includes\GLTypes\RenderObject.h" />
     <ClInclude Include="src\includes\GLTypes\Shader.h" />
     <ClInclude Include="src\includes\GLTypes\Texture.h" />
     <ClInclude Include="src\includes\GLTypes\Transform.h" />
+    <ClInclude Include="src\includes\GLTypes\Vertex.h" />
     <ClInclude Include="src\includes\GLTypes\VertexArray.h" />
     <ClInclude Include="src\includes\GLTypes\VertexBuffer.h" />
     <ClInclude Include="src\includes\Utils\FileUtils.h" />
@@ -153,7 +157,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc142-mtd.lib;glfw3.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

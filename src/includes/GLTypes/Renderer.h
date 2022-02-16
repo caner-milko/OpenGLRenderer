@@ -21,13 +21,13 @@ class Renderer
 {
 	uint32_t itemCount = 0;
 
-
-
-	std::unordered_map<uint32_t, VertexBuffer *> vtxBuffers;
-	std::unordered_map<uint32_t, VertexArray *> vtxArrays;
-	std::unordered_map<uint32_t, ElementBuffer *> elementBuffers;
 	std::vector<RenderObject *> renderObjects;
 	RendererData data;
+
+	std::vector<const VertexBuffer *> vertexBuffers;
+	std::vector<const VertexArray *> vertexArrays;
+	std::vector<const ElementBuffer *> elementBuffers;
+
 public:
 	static Renderer *renderer;
 	FreeCamera *camera;
@@ -35,11 +35,18 @@ public:
 
 	Renderer(RendererData data);
 
-	RenderObject *addOddObject(RenderObjectData data, Shader *shader, const std::vector<float> &vertices, const std::vector<uint32_t> &attributeSizes);
+	SimpleRenderObject *addOddObject(RenderObjectData data, Shader *shader, const std::vector<float> &vertices, const std::vector<uint32_t> &attributeSizes);
 
-	RenderObject *addMesh(RenderObjectData data, Shader *shader, const std::vector<float> &vertices, const std::vector<uint32_t> &attributeSizes, const std::vector<uint32_t> &indices);
+	SimpleRenderObject *addSimpleObject(RenderObjectData data, Shader *shader, const std::vector<float> &vertices, const std::vector<uint32_t> &attributeSizes, const std::vector<uint32_t> &indices);
 
-	RenderObject *cloneObject(uint32_t id);
+	template<typename Type>
+	Type *cloneObject(const Type &from)
+	{
+		uint32_t id = itemCount++;
+		Type *renderObject = new Type(id, from);
+		renderObjects.push_back(renderObject);
+		return renderObject;
+	}
 
 	void draw();
 

@@ -13,6 +13,8 @@
 #include <GLTypes/Renderer.h>
 #include <GLTypes/Camera.h>
 
+#include <assimp/Importer.hpp>
+
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
@@ -232,7 +234,7 @@ int main()
 
 
 
-	RenderObject *lightObj = renderer->addOddObject(RenderObjectData(), lightingShader, lightVertices, lightAttributeSizes);
+	SimpleRenderObject *lightObj = renderer->addOddObject(RenderObjectData(), lightingShader, lightVertices, lightAttributeSizes);
 	renderer->lightManager->createLightType<PointLight>("pointLight", 5);
 	renderer->lightManager->createLightType<DirectionalLight>("directionalLight", 3);
 	renderer->lightManager->createLightType<SpotLight>("spotLight", 5);
@@ -240,12 +242,12 @@ int main()
 	SpotLight *spotLight = renderer->lightManager->reserveLight<SpotLight>("spotLight");
 	DirectionalLight *dirLight = renderer->lightManager->reserveLight<DirectionalLight>("directionalLight");
 	dirLight->setup(glm::vec3(0.3f), glm::vec3(0.3f), glm::vec3(1.0f));
-	RenderObject *spotLightObj = renderer->addOddObject(RenderObjectData(), lightingShader, lightVertices, lightAttributeSizes);
+	SimpleRenderObject *spotLightObj = renderer->addOddObject(RenderObjectData(), lightingShader, lightVertices, lightAttributeSizes);
 	light->setup();
 	spotLight->setup();
-	RenderObject *litObj = renderer->addOddObject(RenderObjectData(), litShader, normalCube, normalAttributeSizes);
+	SimpleRenderObject *litObj = renderer->addOddObject(RenderObjectData(), litShader, normalCube, normalAttributeSizes);
 
-	RenderObject *odd = renderer->addOddObject(RenderObjectData(), shader, vertices, attributeSizes);
+	SimpleRenderObject *odd = renderer->addOddObject(RenderObjectData(), shader, vertices, attributeSizes);
 
 	glm::vec3 lightPos = glm::vec3(1.0f, 2.0f, -1.0f);
 	light->setPosition(lightPos);
@@ -296,7 +298,7 @@ int main()
 	for(int i = 1; i < cubePositions.size(); i++)
 	{
 		glm::vec3 pos = cubePositions[i];
-		RenderObject *ro = renderer->cloneObject(odd->rObjectID);
+		SimpleRenderObject *ro = renderer->cloneObject(*odd);
 
 		ro->setPosition(pos);
 		objects.push_back(ro);
@@ -314,7 +316,7 @@ int main()
 
 		float sinTime = glm::sin(currentFrame);
 
-		glm::vec3 lightOffset = glm::vec3(0.0f, glm::cos(currentFrame) * 3, sinTime * 3);
+		glm::vec3 lightOffset = glm::vec3(0.0f, glm::cos(currentFrame) * 5, sinTime * 5);
 
 
 		light->setPosition(lightPos + lightOffset);
@@ -322,8 +324,8 @@ int main()
 		//litObj->setRotation(glm::vec3(0, glm::radians(180 * glm::cos(0.3 * currentFrame)), 0.0f));
 		//litObj->setPosition(glm::vec3(0.0f, 0.0f, glm::sin(currentFrame * 0.3f) * 5.0));
 
-		spotLight->setYaw(-glm::sin(currentFrame / 3) * 180.0f);
-		spotLightObj->setRotation(glm::vec3(glm::sin(currentFrame / 3) * glm::pi<float>(), 0.0f, 0.0f));
+		spotLight->setYaw(-glm::sin(currentFrame / 1.5f) * 180.0f);
+		spotLightObj->setRotation(glm::vec3(glm::sin(currentFrame / 1.5f) * glm::pi<float>(), 0.0f, 0.0f));
 
 		dirLight->setPitch(180 * glm::cos(0.8f + currentFrame));
 

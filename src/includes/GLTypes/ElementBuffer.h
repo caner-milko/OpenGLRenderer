@@ -3,20 +3,17 @@
 #include <vector>
 #include <iostream>
 #include <GLTypes/VertexBuffer.h>
-#include <GLTypes/VertexArray.h>
 class ElementBuffer : public GLObject
 {
 public:
-	std::vector<uint32_t> indices;
+	const uint32_t indicesSize;
 
-	ElementBuffer();
+	ElementBuffer(const std::vector<uint32_t> &indices, BufferAccessType accessType, BufferCallType callType);
 
-	void addTriangle(uint32_t index1, uint32_t index2, uint32_t index3);
+	/*void addTriangle(uint32_t index1, uint32_t index2, uint32_t index3);
 	void addTriangles(const std::vector<uint32_t> &indices);
 
-	void loadElements(BufferAccessType accessType, BufferCallType callType);
-
-	void drawElements(DrawType drawType);
+	void loadElements(BufferAccessType accessType, BufferCallType callType);*/
 
 	GLOBJ_OVERRIDE(ElementBuffer)
 };
