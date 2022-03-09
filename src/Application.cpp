@@ -221,8 +221,8 @@ int main()
 	//shaders
 	// 
 	Shader *shader = new Shader("./Assets/Shaders/def_vert.glsl", "./Assets/Shaders/def_frag.glsl");
-	shader->addTexture("texture1", textures[0]);
-	shader->addTexture("texture2", textures[1]);
+	shader->setUniformValDef<Texture2D *>("texture1", textures[0]);
+	shader->setUniformValDef<Texture2D *>("texture2", textures[1]);
 
 	Shader *lightingShader = new Shader("./Assets/Shaders/light_vert.glsl", "./Assets/Shaders/light_frag.glsl");
 
@@ -233,8 +233,6 @@ int main()
 	/*---------------------------------------------------*/
 
 
-
-	SimpleRenderObject *lightObj = renderer->addOddObject(RenderObjectData(), lightingShader, lightVertices, lightAttributeSizes);
 	renderer->lightManager->createLightType<PointLight>("pointLight", 5);
 	renderer->lightManager->createLightType<DirectionalLight>("directionalLight", 3);
 	renderer->lightManager->createLightType<SpotLight>("spotLight", 5);
@@ -242,21 +240,20 @@ int main()
 	SpotLight *spotLight = renderer->lightManager->reserveLight<SpotLight>("spotLight");
 	DirectionalLight *dirLight = renderer->lightManager->reserveLight<DirectionalLight>("directionalLight");
 	dirLight->setup(glm::vec3(0.3f), glm::vec3(0.3f), glm::vec3(1.0f));
-	SimpleRenderObject *spotLightObj = renderer->addOddObject(RenderObjectData(), lightingShader, lightVertices, lightAttributeSizes);
 	light->setup();
 	spotLight->setup();
+	SimpleRenderObject *lightObj = renderer->addOddObject(RenderObjectData(), lightingShader, lightVertices, lightAttributeSizes);
+	SimpleRenderObject *spotLightObj = renderer->addOddObject(RenderObjectData(), lightingShader, lightVertices, lightAttributeSizes);
 	SimpleRenderObject *litObj = renderer->addOddObject(RenderObjectData(), litShader, normalCube, normalAttributeSizes);
-
 	SimpleRenderObject *odd = renderer->addOddObject(RenderObjectData(), shader, vertices, attributeSizes);
 
 	glm::vec3 lightPos = glm::vec3(1.0f, 2.0f, -1.0f);
-	light->setPosition(lightPos);
 	lightObj->setPosition(lightPos);
+	light->setPosition(lightPos);
 	glm::vec3 spotLightPos = glm::vec3(-4.0f, 0.0f, 0.0f);
 
 	spotLight->setPosition(spotLightPos);
 	spotLightObj->setPosition(spotLightPos);
-
 
 	litObj->setPosition(glm::vec3());
 
@@ -265,12 +262,10 @@ int main()
 	glm::vec3 objectColor = glm::vec3(1.0f, 0.5f, 0.31f);
 	glm::vec3 lightColor = glm::vec3(1.0f);
 
-
-	litObj->shader->setShaderUniform("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
-	litObj->shader->setShaderUniform("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
-	litObj->shader->setShaderUniform("material.specular", glm::vec3(0.5f));
-	litObj->shader->setShaderUniform("material.shininess", glm::vec1(32.0f));
-
+	litObj->shader->setUniformValDef("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
+	litObj->shader->setUniformValDef("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
+	litObj->shader->setUniformValDef("material.specular", glm::vec3(0.5f));
+	litObj->shader->setUniformValDef("material.shininess", glm::vec1(32.0f));
 
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -280,7 +275,7 @@ int main()
 	//glPointSize(10.0f);
 
 	std::vector<glm::vec3> cubePositions = {
-		glm::vec3(2.0f,  5.0f, -15.0f),
+		glm::vec3(1.0f, 1.0f, 1.0f),
 		glm::vec3(-3.8f, -2.0f, -12.3f),
 		glm::vec3(2.4f, -0.4f, -3.5f),
 		glm::vec3(-1.7f,  3.0f, -7.5f),
@@ -294,6 +289,7 @@ int main()
 
 	std::vector<RenderObject *> objects;
 	objects.push_back(odd);
+
 
 	for(int i = 1; i < cubePositions.size(); i++)
 	{
@@ -324,10 +320,11 @@ int main()
 		//litObj->setRotation(glm::vec3(0, glm::radians(180 * glm::cos(0.3 * currentFrame)), 0.0f));
 		//litObj->setPosition(glm::vec3(0.0f, 0.0f, glm::sin(currentFrame * 0.3f) * 5.0));
 
+
 		spotLight->setYaw(-glm::sin(currentFrame / 1.5f) * 180.0f);
 		spotLightObj->setRotation(glm::vec3(glm::sin(currentFrame / 1.5f) * glm::pi<float>(), 0.0f, 0.0f));
-
 		dirLight->setPitch(180 * glm::cos(0.8f + currentFrame));
+
 
 		for(int i = 0; i < objects.size(); i++)
 		{

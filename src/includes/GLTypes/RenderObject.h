@@ -48,19 +48,19 @@ public:
 	template<typename Type>
 	const ObjectShaderUniform<Type> *getObjectUniform(const std::string &name)
 	{
-		return shader->getObjectUniform<Type>(name);
+		return shader->getUniform<Type>(name);
 	}
 
 	template<typename Type>
-	const ObjectShaderUniform<Type> *getObjectUniformVal(const std::string &name)
+	const Type &getObjectUniformVal(const std::string &name)
 	{
-		return shader->getObjectUniformVal<Type>(name, rObjectID);
+		return shader->getUniformValObj<Type>(name, rObjectID);
 	}
 
 	template<typename Type>
 	void setObjectUniformVal(const std::string &name, const Type &val)
 	{
-		shader->setObjectUniform<Type>(name, val, rObjectID);
+		shader->setUniformValObj<Type>(name, val, rObjectID);
 	}
 
 	const glm::mat4 &getModel(bool forcedUpdate = false);

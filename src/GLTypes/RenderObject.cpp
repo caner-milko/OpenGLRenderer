@@ -56,10 +56,10 @@ void RenderObject::updateMVP(FreeCamera &camera, bool forced)
 	setObjectUniformVal("model.MV", MV);
 	if(camera.isVPUpdated() || forced)
 	{
-		shader->setShaderUniform("model.P", P);
-		shader->setShaderUniform("model.VP", VP);
-		shader->setShaderUniform("model.V", V);
-		shader->setShaderUniform("camera.viewPos", camera.getCameraPos());
+		shader->setUniformValDef("model.P", P);
+		shader->setUniformValDef("model.VP", VP);
+		shader->setUniformValDef("model.V", V);
+		shader->setUniformValDef("camera.viewPos", camera.getCameraPos());
 	}
 	setChangedModel(false);
 }
