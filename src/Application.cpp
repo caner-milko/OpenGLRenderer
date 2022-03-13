@@ -198,6 +198,50 @@ int main()
 		-0.5f,  0.5f, -0.5f,
 	};
 
+	std::vector<float> totCube = {
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f,
+
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,  0.0f, 0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,  1.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,  1.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,  1.0f, 1.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,  0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,  0.0f, 0.0f,
+
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f,
+		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f,
+
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f,
+		 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f,
+
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f,
+
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
+	};
+
 	std::vector<uint32_t> indices = {
 		0, 1, 2,
 		2,3,0
@@ -206,6 +250,7 @@ int main()
 	std::vector<uint32_t> attributeSizes = {3,2};
 	std::vector<uint32_t> lightAttributeSizes = {3};
 	std::vector<uint32_t> normalAttributeSizes = {3,3};
+	std::vector<uint32_t> totAttributeSizes = {3, 3, 2};
 
 	Renderer *renderer = new Renderer(RendererData());
 
@@ -228,7 +273,12 @@ int main()
 
 	Shader *litShader = new Shader("./Assets/Shaders/lit_vert.glsl", "./Assets/Shaders/lit_frag.glsl");
 
+	Shader *materialShader = new Shader("./Assets/Shaders/material_vert.glsl", "./Assets/Shaders/material_frag.glsl");
+
+	Shader *testShader = new Shader("./Assets/Shaders/test_vert.glsl", "./Assets/Shaders/test_frag.glsl");
+
 	renderer->lightManager->litShaders.push_back(litShader);
+	renderer->lightManager->litShaders.push_back(materialShader);
 
 	/*---------------------------------------------------*/
 
@@ -239,13 +289,24 @@ int main()
 	PointLight *light = renderer->lightManager->reserveLight<PointLight>("pointLight");
 	SpotLight *spotLight = renderer->lightManager->reserveLight<SpotLight>("spotLight");
 	DirectionalLight *dirLight = renderer->lightManager->reserveLight<DirectionalLight>("directionalLight");
+	DirectionalLight *dirLightStatic = renderer->lightManager->reserveLight<DirectionalLight>("directionalLight");
+
 	dirLight->setup(glm::vec3(0.3f), glm::vec3(0.3f), glm::vec3(1.0f));
 	light->setup();
 	spotLight->setup();
+	dirLightStatic->setup(glm::vec3(0.4), glm::vec3(1.0f), glm::vec3(1.0f));
+
 	SimpleRenderObject *lightObj = renderer->addOddObject(RenderObjectData(), lightingShader, lightVertices, lightAttributeSizes);
 	SimpleRenderObject *spotLightObj = renderer->addOddObject(RenderObjectData(), lightingShader, lightVertices, lightAttributeSizes);
 	SimpleRenderObject *litObj = renderer->addOddObject(RenderObjectData(), litShader, normalCube, normalAttributeSizes);
+
+	SimpleRenderObject *totObj = renderer->addOddObject(RenderObjectData(), materialShader, totCube, totAttributeSizes);
+
 	SimpleRenderObject *odd = renderer->addOddObject(RenderObjectData(), shader, vertices, attributeSizes);
+
+	std::vector<Mesh *> meshes = renderer->addModel(RenderObjectData(), materialShader, "./Assets/Models/test/vida_obj.obj");
+
+	std::vector<Mesh *> room = renderer->addModel(RenderObjectData(), materialShader, "./Assets/Models/room/room.obj");
 
 	glm::vec3 lightPos = glm::vec3(1.0f, 2.0f, -1.0f);
 	lightObj->setPosition(lightPos);
@@ -255,17 +316,29 @@ int main()
 	spotLight->setPosition(spotLightPos);
 	spotLightObj->setPosition(spotLightPos);
 
-	litObj->setPosition(glm::vec3());
+	dirLightStatic->setYaw(-135.0f);
+	dirLightStatic->setPitch(-30.0f);
 
-	litObj->setScale(glm::vec3(2.0f));
+	litObj->setPosition(glm::vec3(0.0f, 0.0f, 5.0f));
+	totObj->setPosition(glm::vec3(3.0f));
+
+	litObj->setScale(glm::vec3(1.0f));
+	totObj->setScale(glm::vec3(2.0f));
 
 	glm::vec3 objectColor = glm::vec3(1.0f, 0.5f, 0.31f);
 	glm::vec3 lightColor = glm::vec3(1.0f);
 
-	litObj->shader->setUniformValDef("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
-	litObj->shader->setUniformValDef("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
-	litObj->shader->setUniformValDef("material.specular", glm::vec3(0.5f));
-	litObj->shader->setUniformValDef("material.shininess", glm::vec1(32.0f));
+	litShader->setUniformValDef("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
+	litShader->setUniformValDef("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
+	litShader->setUniformValDef("material.specular", glm::vec3(0.5f));
+	litShader->setUniformValDef("material.shininess", glm::vec1(32.0f));
+
+	materialShader->setUniformValDef("material.ambient", glm::vec3(0.1f));
+	materialShader->setUniformValDef("material.diffuseTint", glm::vec3(1.0f));
+	materialShader->setUniformValDef("material.specularTint", glm::vec3(1.0f));
+	materialShader->setUniformValDef("material.shininess", glm::vec1(32.0f));
+	materialShader->setUniformValDef("material.texture_diffuse", textures[0]);
+	materialShader->setUniformValDef("material.texture_specular", textures[1]);
 
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -289,8 +362,6 @@ int main()
 
 	std::vector<RenderObject *> objects;
 	objects.push_back(odd);
-
-
 	for(int i = 1; i < cubePositions.size(); i++)
 	{
 		glm::vec3 pos = cubePositions[i];
@@ -323,7 +394,6 @@ int main()
 
 		spotLight->setYaw(-glm::sin(currentFrame / 1.5f) * 180.0f);
 		spotLightObj->setRotation(glm::vec3(glm::sin(currentFrame / 1.5f) * glm::pi<float>(), 0.0f, 0.0f));
-		dirLight->setPitch(180 * glm::cos(0.8f + currentFrame));
 
 
 		for(int i = 0; i < objects.size(); i++)

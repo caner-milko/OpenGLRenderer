@@ -9,6 +9,9 @@
 #include <GLTypes/VertexBuffer.h>
 #include <GLTypes/VertexArray.h>
 #include <GLTypes/LightManager.h>
+#include <GLTypes/Mesh.h>
+#include <GLTypes/AssimpModel.h>
+
 
 struct RendererData
 {
@@ -19,6 +22,7 @@ struct RendererData
 
 class Renderer
 {
+private:
 	uint32_t itemCount = 0;
 
 	std::vector<RenderObject *> renderObjects;
@@ -35,9 +39,14 @@ public:
 
 	Renderer(RendererData data);
 
+
 	SimpleRenderObject *addOddObject(RenderObjectData data, Shader *shader, const std::vector<float> &vertices, const std::vector<uint32_t> &attributeSizes);
 
 	SimpleRenderObject *addSimpleObject(RenderObjectData data, Shader *shader, const std::vector<float> &vertices, const std::vector<uint32_t> &attributeSizes, const std::vector<uint32_t> &indices);
+
+	std::vector<Mesh *> addModel(RenderObjectData data, Shader *shader, const char *path);
+
+	Mesh *addAssimpMesh(RenderObjectData data, Shader *shader, AssimpMesh &assimpMesh);
 
 	template<typename Type>
 	Type *cloneObject(const Type &from)
@@ -51,4 +60,6 @@ public:
 	void draw();
 
 	~Renderer();
+private:
+	void addRenderObject(RenderObject *renderObject);
 };

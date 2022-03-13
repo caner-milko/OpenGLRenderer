@@ -18,7 +18,7 @@ void configureTexture2DByType(const char *imgPath, bool vertical, TextureType in
 	}
 	else
 	{
-		std::cout << "Error loading second texture." << std::endl;
+		std::cout << "Error while loading texture." << std::endl;
 	}
 	stbi_image_free(data);
 

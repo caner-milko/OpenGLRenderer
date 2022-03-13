@@ -22,15 +22,15 @@ public:
 
 
 template<typename Type>
-class ObjectShaderUniform : public IShaderUniform
+class ShaderUniform : public IShaderUniform
 {
 private:
 	int32_t lastEditor;
 	Type defVal;
 	std::unordered_map<int32_t, Type> specificValues;
 public:
-	ObjectShaderUniform(Shader *const shader, const std::string &name, const Type &defVal);
-	ObjectShaderUniform(Shader *const shader, const std::string &name, const Type &val, const int32_t object);
+	ShaderUniform(Shader *const shader, const std::string &name, const Type &defVal);
+	ShaderUniform(Shader *const shader, const std::string &name, const Type &val, const int32_t object);
 	void setValue(const Type &newVal, const int32_t object);
 	void updateShader() const override;
 	void selectObject(const int32_t object) override;
@@ -39,17 +39,17 @@ public:
 	const int32_t getLastEditor() const;
 };
 
-
 template<>
-class ObjectShaderUniform<Texture2D *> : public IShaderUniform
+class ShaderUniform<Texture2D *> : public IShaderUniform
 {
 private:
 	int32_t lastEditor;
 	Texture2D *defVal;
 	std::unordered_map<int32_t, Texture2D *> specificValues;
+	uint32_t texLoc;
 public:
-	ObjectShaderUniform(Shader *const shader, const std::string &name, Texture2D *const defVal);
-	ObjectShaderUniform(Shader *const shader, const std::string &name, Texture2D *const val, const int32_t object);
+	ShaderUniform(Shader *const shader, const std::string &name, Texture2D *const defVal);
+	ShaderUniform(Shader *const shader, const std::string &name, Texture2D *const val, const int32_t object);
 
 	void setValue(Texture2D *const &newVal, const int32_t object);
 	void selectObject(const int32_t object) override;
@@ -57,7 +57,6 @@ public:
 	Texture2D *const &getCurValue() const;
 	const int32_t getLastEditor() const;
 
-	const uint32_t texLoc;
 	uint32_t setupPosition();
 	void updateShader() const override;
 };
@@ -93,19 +92,19 @@ public:
 	template<typename Type>
 	const Type &getCurObjectUniformVal(const std::string &name)
 	{
-		return ((ObjectShaderUniform<Type>*)objectUniforms[name])->getCurValue();
+		return ((ShaderUniform<Type>*)objectUniforms[name])->getCurValue();
 	}
 
 	template<typename Type>
-	const ObjectShaderUniform<Type> *getUniform(const std::string &name)
+	const ShaderUniform<Type> *getUniform(const std::string &name)
 	{
-		return (ObjectShaderUniform<Type>*)objectUniforms[name];
+		return (ShaderUniform<Type>*)objectUniforms[name];
 	}
 
 	template<typename Type>
 	const Type &getUniformValObj(const std::string &name, const int32_t object)
 	{
-		return ((ObjectShaderUniform<Type>*)objectUniforms[name])->getValue(object);
+		return ((ShaderUniform<Type>*)objectUniforms[name])->getValue(object);
 	}
 
 	template<typename Type>
@@ -113,18 +112,18 @@ public:
 	{
 		if(objectUniforms.find(name) == objectUniforms.end())
 		{
-			objectUniforms[name] = (IShaderUniform *)new ObjectShaderUniform<Type>(this, name, val, object);
+			objectUniforms[name] = (IShaderUniform *)new ShaderUniform<Type>(this, name, val, object);
 		}
 		else
 		{
-			((ObjectShaderUniform<Type>*)objectUniforms[name])->setValue(val, object);
+			((ShaderUniform<Type>*)objectUniforms[name])->setValue(val, object);
 		}
 	}
 
 	template<typename Type>
 	const Type &getUniformValDef(const std::string &name)
 	{
-		return ((ObjectShaderUniform<Type>*)objectUniforms[name])->getValue(-1);
+		return ((ShaderUniform<Type>*)objectUniforms[name])->getValue(-1);
 	}
 
 	template<typename Type>
@@ -132,11 +131,11 @@ public:
 	{
 		if(objectUniforms.find(name) == objectUniforms.end())
 		{
-			objectUniforms[name] = (IShaderUniform *)new ObjectShaderUniform<Type>(this, name, defVal);
+			objectUniforms[name] = (IShaderUniform *)new ShaderUniform<Type>(this, name, defVal);
 		}
 		else
 		{
-			((ObjectShaderUniform<Type>*)objectUniforms[name])->setValue(defVal, -1);
+			((ShaderUniform<Type>*)objectUniforms[name])->setValue(defVal, -1);
 		}
 	}
 
@@ -145,6 +144,6 @@ public:
 	GLOBJ_OVERRIDE(Shader)
 };
 
-#define TEMPLATE_UNIFORM(x) /*template ShaderUniform<x>;*/ template ObjectShaderUniform<x>;
+#define TEMPLATE_UNIFORM(x) /*template ShaderUniform<x>;*/ template ShaderUniform<x>;
 
 

@@ -60,6 +60,9 @@
     <ClCompile Include="src\GLTypes\Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\GLTypes\AssimpModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\includes\GLTypes\Camera.h">
@@ -104,7 +107,7 @@
     <ClInclude Include="src\includes\GLTypes\Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\includes\GLTypes\Model.h">
+    <ClInclude Include="src\includes\GLTypes\AssimpModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\includes\GLTypes\Vertex.h">

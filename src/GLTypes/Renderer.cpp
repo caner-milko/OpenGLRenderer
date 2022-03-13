@@ -1,5 +1,4 @@
 #include <GLTypes/Renderer.h>
-
 uint32_t RendererData::getClearMask()
 {
 	return (clearColor * GL_COLOR_BUFFER_BIT) | (clearDepth * GL_DEPTH_BUFFER_BIT);
@@ -19,13 +18,7 @@ SimpleRenderObject *Renderer::addOddObject(RenderObjectData data, Shader *shader
 {
 	uint32_t id = itemCount++;
 	SimpleRenderObject *renderObject = new SimpleRenderObject(id, data, shader, vertices, attributeSizes);
-	renderObject->initObject();
-
-	vertexBuffers.push_back(renderObject->getVertexBuffer());
-	vertexArrays.push_back(renderObject->getVertexArray());
-	elementBuffers.push_back(renderObject->getElementBuffer());
-
-	renderObjects.push_back(renderObject);
+	addRenderObject(renderObject);
 	return renderObject;
 }
 
@@ -33,14 +26,35 @@ SimpleRenderObject *Renderer::addSimpleObject(RenderObjectData data, Shader *sha
 {
 	uint32_t id = itemCount++;
 	SimpleRenderObject *renderObject = new SimpleRenderObject(id, data, shader, vertices, attributeSizes, indices);
-	renderObject->initObject();
-	vertexBuffers.push_back(renderObject->getVertexBuffer());
-	vertexArrays.push_back(renderObject->getVertexArray());
-	elementBuffers.push_back(renderObject->getElementBuffer());
-
-	renderObjects.push_back(renderObject);
+	addRenderObject(renderObject);
 	return renderObject;
 }
+
+Mesh *Renderer::addAssimpMesh(RenderObjectData data, Shader *shader, AssimpMesh &assimpMesh)
+{
+	uint32_t id = itemCount++;
+	Mesh *mesh = new Mesh(id, data, shader, assimpMesh.vertices, assimpMesh.indices);
+	addRenderObject(mesh);
+	for(auto &texture : assimpMesh.textures)
+	{
+		shader->setUniformValObj<Texture2D *>("material." + texture.type, texture.texture, id);
+	}
+	return mesh;
+}
+
+std::vector<Mesh *> Renderer::addModel(RenderObjectData data, Shader *shader, const char *path)
+{
+	AssimpModel model(path);
+	std::vector<Mesh *> meshes;
+	for(auto &mesh : model.meshes)
+	{
+		meshes.push_back(addAssimpMesh(data, shader, mesh));
+	}
+
+	return meshes;
+}
+
+
 
 void Renderer::draw()
 {
@@ -81,4 +95,15 @@ Renderer::~Renderer()
 		delete it;
 	}
 
+}
+
+void Renderer::addRenderObject(RenderObject *renderObject)
+{
+	renderObject->initObject();
+	vertexBuffers.push_back(renderObject->getVertexBuffer());
+	vertexArrays.push_back(renderObject->getVertexArray());
+	if(renderObject->hasElementBuffer())
+		elementBuffers.push_back(renderObject->getElementBuffer());
+
+	renderObjects.push_back(renderObject);
 }

@@ -46,7 +46,7 @@ public:
 	bool hasElementBuffer() const;
 
 	template<typename Type>
-	const ObjectShaderUniform<Type> *getObjectUniform(const std::string &name)
+	const ShaderUniform<Type> *getObjectUniform(const std::string &name)
 	{
 		return shader->getUniform<Type>(name);
 	}
