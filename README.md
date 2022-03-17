@@ -17,8 +17,8 @@ A custom OpenGL Renderer written in C++ using Visual Studio 2019 while I go thro
 | :-------------: | :-----:|
 | [Getting Started](https://learnopengl.com/Getting-started/OpenGL)   | **COMPLETE** |
 | [Lighting](https://learnopengl.com/Lighting/Colors)   | **COMPLETE** |
-| [Model Loading](https://learnopengl.com/Model-Loading/Assimp)   | **CURRENT STATUS** |
-| [Advanced OpenGL](https://learnopengl.com/Advanced-OpenGL/Depth-testing)   | ~~**NOT IMPLEMENTED**~~ |
+| [Model Loading](https://learnopengl.com/Model-Loading/Assimp)   | **COMPLETE** |
+| [Advanced OpenGL](https://learnopengl.com/Advanced-OpenGL/Depth-testing)   | **CURRENT STATUS** |
 | [Advanced Lighting](https://learnopengl.com/Advanced-Lighting/Advanced-Lighting)   | ~~**NOT IMPLEMENTED**~~ |
 | [PBR](https://learnopengl.com/PBR/Theory)   | ~~**NOT IMPLEMENTED**~~ |
 | [Text Rendering](https://learnopengl.com/In-Practice/Text-Rendering)   | ~~**NOT IMPLEMENTED**~~ |
