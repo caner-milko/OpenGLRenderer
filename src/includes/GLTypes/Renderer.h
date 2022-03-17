@@ -39,6 +39,7 @@ public:
 
 	Renderer(RendererData data);
 
+	void init();
 
 	SimpleRenderObject *addOddObject(RenderObjectData data, Shader *shader, const std::vector<float> &vertices, const std::vector<uint32_t> &attributeSizes);
 

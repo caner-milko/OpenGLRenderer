@@ -54,7 +54,6 @@ void LightType<Type>::free()
 {
 	for(auto &light : lights)
 	{
-		((Light *)light)->free();
 		delete light;
 	}
 	lights.clear();

@@ -8,6 +8,10 @@ Renderer *Renderer::renderer;
 Renderer::Renderer(RendererData data) : camera(new FreeCamera(glm::vec3(0.0f))), data(data), lightManager(new LightManager())
 {
 	renderer = this;
+}
+
+void Renderer::init()
+{
 	if(data.depthTest)
 	{
 		glEnable(GL_DEPTH_TEST);

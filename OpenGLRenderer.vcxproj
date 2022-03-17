@@ -34,6 +34,7 @@
     <ClCompile Include="src\GLTypes\Transform.cpp" />
     <ClCompile Include="src\GLTypes\VertexArray.cpp" />
     <ClCompile Include="src\GLTypes\VertexBuffer.cpp" />
+    <ClCompile Include="src\Sandbox.cpp" />
     <ClCompile Include="src\Utils\FileUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -52,6 +53,7 @@
     <ClInclude Include="src\includes\GLTypes\Vertex.h" />
     <ClInclude Include="src\includes\GLTypes\VertexArray.h" />
     <ClInclude Include="src\includes\GLTypes\VertexBuffer.h" />
+    <ClInclude Include="src\includes\Sandbox.h" />
     <ClInclude Include="src\includes\Utils\FileUtils.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
