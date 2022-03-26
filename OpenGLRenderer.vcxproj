@@ -25,17 +25,18 @@
     <ClCompile Include="src\GLTypes\ElementBuffer.cpp" />
     <ClCompile Include="src\GLTypes\Light.cpp" />
     <ClCompile Include="src\GLTypes\LightManager.cpp" />
+    <ClCompile Include="src\GLTypes\Material.cpp" />
     <ClCompile Include="src\GLTypes\Mesh.cpp" />
     <ClCompile Include="src\GLTypes\AssimpModel.cpp" />
     <ClCompile Include="src\GLTypes\Renderer.cpp" />
     <ClCompile Include="src\GLTypes\RenderObject.cpp" />
     <ClCompile Include="src\GLTypes\Shader.cpp" />
+    <ClCompile Include="src\GLTypes\ShaderUniform.cpp" />
     <ClCompile Include="src\GLTypes\Texture2D.cpp" />
     <ClCompile Include="src\GLTypes\Transform.cpp" />
     <ClCompile Include="src\GLTypes\VertexArray.cpp" />
     <ClCompile Include="src\GLTypes\VertexBuffer.cpp" />
     <ClCompile Include="src\Sandbox.cpp" />
-    <ClCompile Include="src\Utils\FileUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\includes\GLTypes\Camera.h" />
@@ -43,18 +44,20 @@
     <ClInclude Include="src\includes\GLTypes\GLObject.h" />
     <ClInclude Include="src\includes\GLTypes\Light.h" />
     <ClInclude Include="src\includes\GLTypes\LightManager.h" />
+    <ClInclude Include="src\includes\GLTypes\Material.h" />
     <ClInclude Include="src\includes\GLTypes\Mesh.h" />
     <ClInclude Include="src\includes\GLTypes\AssimpModel.h" />
     <ClInclude Include="src\includes\GLTypes\Renderer.h" />
     <ClInclude Include="src\includes\GLTypes\RenderObject.h" />
     <ClInclude Include="src\includes\GLTypes\Shader.h" />
+    <ClInclude Include="src\includes\GLTypes\ShaderUniform.h" />
     <ClInclude Include="src\includes\GLTypes\Texture.h" />
     <ClInclude Include="src\includes\GLTypes\Transform.h" />
     <ClInclude Include="src\includes\GLTypes\Vertex.h" />
     <ClInclude Include="src\includes\GLTypes\VertexArray.h" />
     <ClInclude Include="src\includes\GLTypes\VertexBuffer.h" />
     <ClInclude Include="src\includes\Sandbox.h" />
-    <ClInclude Include="src\includes\Utils\FileUtils.h" />
+    <ClInclude Include="src\includes\Utils.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

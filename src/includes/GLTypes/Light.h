@@ -22,7 +22,7 @@ public:
 	{
 		for(auto &shader : *litShaders)
 		{
-			shader->setUniformValDef<Type>(getNameFor(name), val);
+			shader->setUniform<Type>(getNameFor(name), val);
 		}
 	}
 	virtual void updateTransforms();

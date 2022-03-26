@@ -2,29 +2,63 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+#include <Utils.hpp>
 
-void configureTexture2DByType(const char *imgPath, bool vertical, TextureType inType, TextureType outType)
+void loadJPG(const std::string &imgPath)
 {
-
-	stbi_set_flip_vertically_on_load(vertical);
+	stbi_set_flip_vertically_on_load(false);
 	int width, height, nrChannels;
-	unsigned char *data = stbi_load(imgPath, &width, &height, &nrChannels, 0);
-
+	uint8_t *data = stbi_load(imgPath.c_str(), &width, &height, &nrChannels, 0);
 
 	if(data)
 	{
-		glTexImage2D(GL_TEXTURE_2D, 0, (int32_t)outType, width, height, 0, (int32_t)inType, GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else
 	{
 		std::cout << "Error while loading texture." << std::endl;
 	}
-	stbi_image_free(data);
 
+	stbi_image_free(data);
 }
 
-Texture2D::Texture2D(const char *imgPath, bool vertical, TextureType inType, TextureType outType, TextureWrapping wrapping, TextureFiltering minFiltering, TextureFiltering maxFiltering)
+void loadPNG(const std::string &imgPath)
+{
+	stbi_set_flip_vertically_on_load(true);
+	int width, height, nrChannels;
+	uint8_t *data = stbi_load(imgPath.c_str(), &width, &height, &nrChannels, 0);
+
+	if(data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "Error while loading texture." << std::endl;
+	}
+
+	stbi_image_free(data);
+}
+
+void loadTexture2D(const std::string &imgPath)
+{
+	if(Utils::StrUtils::endsWith(imgPath, ".jpg") || Utils::StrUtils::endsWith(imgPath, ".jpeg"))
+	{
+		loadJPG(imgPath);
+	}
+	else if(Utils::StrUtils::endsWith(imgPath, ".png"))
+	{
+		loadPNG(imgPath);
+	}
+	else
+	{
+		std::cout << "Image format not supported." << std::endl;
+	}
+}
+
+Texture2D::Texture2D(const char *imgPath, TextureWrapping wrapping, TextureFiltering minFiltering, TextureFiltering maxFiltering) : path(imgPath)
 {
 	glGenTextures(1, &id);
 	use();
@@ -33,7 +67,7 @@ Texture2D::Texture2D(const char *imgPath, bool vertical, TextureType inType, Tex
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (int32_t)minFiltering);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (int32_t)maxFiltering);
 
-	configureTexture2DByType(imgPath, vertical, inType, outType);
+	loadTexture2D(imgPath);
 }
 
 void Texture2D::changeFiltering(TextureFiltering minFiltering, TextureFiltering maxFiltering)

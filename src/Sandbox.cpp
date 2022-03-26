@@ -31,6 +31,7 @@ void initWindow();
 void initCamera();
 void initTextures();
 void initShaders();
+void initMaterials();
 void initLights();
 void initObjects();
 void update();
@@ -45,6 +46,7 @@ Sandbox::Sandbox()
 	initCamera();
 	initTextures();
 	initShaders();
+	initMaterials();
 	initLights();
 	initObjects();
 	renderLoop();
@@ -96,11 +98,11 @@ Texture2D *wallTex, *smileTex;
 
 void initTextures()
 {
-	wallTex = new Texture2D("./Assets/wall.jpg", false, TextureType::RGB, TextureType::RGB);
-	smileTex = new Texture2D("./Assets/awesomeface.png", true, TextureType::RGBA, TextureType::RGBA);
+	wallTex = new Texture2D("./Assets/wall.jpg");
+	smileTex = new Texture2D("./Assets/awesomeface.png");
 }
 
-Shader *defShader, *lightingShader, *lightShader, *litShader, *materialShader, *testShader;
+Shader *defShader, *lightShader, *litShader, *materialShader, *testShader;
 
 glm::vec3 objectColor = glm::vec3(1.0f, 0.5f, 0.31f);
 glm::vec3 lightColor = glm::vec3(1.0f);
@@ -110,34 +112,20 @@ glm::vec1 matShininess = glm::vec1(32.0f);
 
 void initShaders()
 {
-
 	defShader = new Shader("./Assets/Shaders/def_vert.glsl", "./Assets/Shaders/def_frag.glsl");
-	defShader->setUniformValDef<Texture2D *>("texture1", wallTex);
-	defShader->setUniformValDef<Texture2D *>("texture2", smileTex);
 
 
-	lightingShader = new Shader("./Assets/Shaders/light_vert.glsl", "./Assets/Shaders/light_frag.glsl");
+	lightShader = new Shader("./Assets/Shaders/light_vert.glsl", "./Assets/Shaders/light_frag.glsl");
 
 
 	litShader = new Shader("./Assets/Shaders/lit_vert.glsl", "./Assets/Shaders/lit_frag.glsl");
 
 	renderer->lightManager->litShaders.push_back(litShader);
-	litShader->setUniformValDef("material.ambient", objectColor);
-	litShader->setUniformValDef("material.diffuse", objectColor);
-	litShader->setUniformValDef("material.specular", matSpecular);
-	litShader->setUniformValDef("material.shininess", matShininess);
 
 
 	materialShader = new Shader("./Assets/Shaders/material_vert.glsl", "./Assets/Shaders/material_frag.glsl");
 
 	renderer->lightManager->litShaders.push_back(materialShader);
-	materialShader->setUniformValDef("material.ambient", glm::vec3(1.0f));
-	materialShader->setUniformValDef("material.diffuseTint", glm::vec3(1.0f));
-	materialShader->setUniformValDef("material.specularTint", glm::vec3(1.0f));
-	materialShader->setUniformValDef("material.shininess", glm::vec1(32.0f));
-	materialShader->setUniformValDef("material.texture_diffuse", wallTex);
-	materialShader->setUniformValDef("material.texture_specular", smileTex);
-
 
 	testShader = new Shader("./Assets/Shaders/test_vert.glsl", "./Assets/Shaders/test_frag.glsl");
 
@@ -145,12 +133,41 @@ void initShaders()
 
 }
 
+Material *defObjMat, *lightMat, *litMat, *materialMat, *testMat;
+
+void initMaterials()
+{
+	defObjMat = new Material(*defShader, "defObjMat");
+	defObjMat->setUniform("texture1", wallTex);
+	defObjMat->setUniform("texture2", smileTex);
+
+	litMat = new Material(*litShader, "litMat");
+
+	litMat->setUniform("ambient", objectColor);
+	litMat->setUniform("diffuse", objectColor);
+	litMat->setUniform("specular", matSpecular);
+	litMat->setUniform("shininess", matShininess);
+
+	lightMat = new Material(*lightShader, "lightMat");
+
+	materialMat = new Material(*materialShader, "materialMat");
+
+	materialMat->setUniform("ambientCol", glm::vec3(0.3f));
+	materialMat->setUniform("diffuseCol", glm::vec3(1.0f));
+	materialMat->setUniform("specularCol", glm::vec3(1.0f));
+	materialMat->setUniform("shininess", glm::vec1(32.0f));
+	materialMat->setUniform("texture_diffuse", wallTex);
+	materialMat->setUniform("texture_specular", smileTex);
+
+	testMat = new Material(*testShader, "testMat");
+}
+
 PointLight *pointLight;
 SpotLight *spotLight;
 DirectionalLight *dirLightStatic;
 
 glm::vec3 pointLightPos = glm::vec3(1.0f, 2.0f, -1.0f);
-glm::vec3 spotLightPos = glm::vec3(-4.0f, 0.0f, 0.0f);
+glm::vec3 spotLightPos = glm::vec3(4.0f, 2.0f, 0.0f);
 
 void initLights()
 {
@@ -169,13 +186,13 @@ void initLights()
 
 	dirLightStatic = renderer->lightManager->reserveLight<DirectionalLight>("directionalLight");
 
-	dirLightStatic->setup(glm::vec3(0.4), glm::vec3(1.0f), glm::vec3(1.0f));
+	dirLightStatic->setup(glm::vec3(0.4f), glm::vec3(1.0f), glm::vec3(1.0f));
 	dirLightStatic->setYaw(-135.0f);
 	dirLightStatic->setPitch(-30.0f);
 }
 
 SimpleRenderObject *pointLightObj, *spotLightObj, *litObj, *totObj, *odd;
-std::vector<Mesh *> screw, room;
+AssimpModel *screw, *room;
 std::vector<RenderObject *> oddClones;
 
 void initObjects()
@@ -367,30 +384,30 @@ void initObjects()
 	std::vector<uint32_t> normalAttributeSizes = {3,3};
 	std::vector<uint32_t> totAttributeSizes = {3, 3, 2};
 
-	pointLightObj = renderer->addOddObject(RenderObjectData(), lightingShader, lightVertices, lightAttributeSizes);
+	pointLightObj = renderer->addOddObject(RenderObjectData(), lightMat, lightVertices, lightAttributeSizes);
 
 	pointLightObj->setPosition(pointLightPos);
 
 
-	spotLightObj = renderer->addOddObject(RenderObjectData(), lightingShader, lightVertices, lightAttributeSizes);
+	spotLightObj = renderer->addOddObject(RenderObjectData(), lightMat, lightVertices, lightAttributeSizes);
 
 	spotLightObj->setPosition(spotLightPos);
 
 
-	litObj = renderer->addOddObject(RenderObjectData(), litShader, normalCube, normalAttributeSizes);
+	litObj = renderer->addOddObject(RenderObjectData(), litMat, normalCube, normalAttributeSizes);
 
 	litObj->setPosition(glm::vec3(0.0f, 0.0f, 5.0f));
 
-	totObj = renderer->addOddObject(RenderObjectData(), materialShader, totCube, totAttributeSizes);
+	totObj = renderer->addOddObject(RenderObjectData(), materialMat, totCube, totAttributeSizes);
 
 	totObj->setPosition(glm::vec3(3.0f));
 	totObj->setScale(glm::vec3(2.0f));
 
 
-	screw = renderer->addModel(RenderObjectData(), materialShader, "./Assets/Models/test/vida_obj.obj");
+	screw = renderer->addModel(RenderObjectData(), *materialMat, "./Assets/Models/test/vida_obj.obj");
 
 
-	room = renderer->addModel(RenderObjectData(), materialShader, "./Assets/Models/room/room.obj");
+	//room = renderer->addModel(RenderObjectData(), *materialMat, "./Assets/Models/room/room.obj");
 
 
 	std::vector<glm::vec3> cubePositions = {
@@ -404,7 +421,7 @@ void initObjects()
 		glm::vec3(-1.3f,  1.0f, -1.5f)
 	};
 
-	odd = renderer->addOddObject(RenderObjectData(), defShader, vertices, attributeSizes);
+	odd = renderer->addOddObject(RenderObjectData(), defObjMat, vertices, attributeSizes);
 
 	odd->setPosition(cubePositions[0]);
 
@@ -430,13 +447,12 @@ void update()
 
 	pointLight->setPosition(pointLightPos + lightOffset);
 	pointLightObj->setPosition(pointLightPos + lightOffset);
-	//litObj->setRotation(glm::vec3(0, glm::radians(180 * glm::cos(0.3 * currentFrame)), 0.0f));
-	//litObj->setPosition(glm::vec3(0.0f, 0.0f, glm::sin(currentFrame * 0.3f) * 5.0));
 
 
 	spotLight->setYaw(-glm::sin(currentFrame / 1.5f) * 180.0f);
 	spotLightObj->setRotation(glm::vec3(glm::sin(currentFrame / 1.5f) * glm::pi<float>(), 0.0f, 0.0f));
 
+	materialMat->setUniform("diffuseCol", glm::vec3(sinTime, 0.3f, 0.2f));
 
 	for(int i = 0; i < oddClones.size(); i++)
 	{
@@ -487,8 +503,12 @@ void renderLoop()
 
 void end()
 {
+	delete defObjMat;
+	delete lightMat;
+	delete litMat;
+	delete materialMat;
+	delete testMat;
 	delete defShader;
-	delete lightingShader;
 	delete lightShader;
 	delete litShader;
 	delete materialShader;

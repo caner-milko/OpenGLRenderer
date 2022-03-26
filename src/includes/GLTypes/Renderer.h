@@ -25,7 +25,7 @@ class Renderer
 private:
 	uint32_t itemCount = 0;
 
-	std::vector<RenderObject *> renderObjects;
+	std::unordered_map<uint32_t, RenderObject *> renderObjects;
 	RendererData data;
 
 	std::vector<const VertexBuffer *> vertexBuffers;
@@ -41,20 +41,20 @@ public:
 
 	void init();
 
-	SimpleRenderObject *addOddObject(RenderObjectData data, Shader *shader, const std::vector<float> &vertices, const std::vector<uint32_t> &attributeSizes);
+	SimpleRenderObject *addOddObject(RenderObjectData data, Material *material, const std::vector<float> &vertices, const std::vector<uint32_t> &attributeSizes);
 
-	SimpleRenderObject *addSimpleObject(RenderObjectData data, Shader *shader, const std::vector<float> &vertices, const std::vector<uint32_t> &attributeSizes, const std::vector<uint32_t> &indices);
+	SimpleRenderObject *addSimpleObject(RenderObjectData data, Material *material, const std::vector<float> &vertices, const std::vector<uint32_t> &attributeSizes, const std::vector<uint32_t> &indices);
 
-	std::vector<Mesh *> addModel(RenderObjectData data, Shader *shader, const char *path);
+	AssimpModel *addModel(RenderObjectData data, const Material &baseMaterial, const char *path);
 
-	Mesh *addAssimpMesh(RenderObjectData data, Shader *shader, AssimpMesh &assimpMesh);
+	Mesh *addMesh(RenderObjectData data, Material *material, std::vector<Vertex> &vertices, std::vector<uint32_t> &indices);
 
 	template<typename Type>
 	Type *cloneObject(const Type &from)
 	{
 		uint32_t id = itemCount++;
 		Type *renderObject = new Type(id, from);
-		renderObjects.push_back(renderObject);
+		renderObjects.insert({id, renderObject});
 		return renderObject;
 	}
 

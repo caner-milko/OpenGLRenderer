@@ -20,9 +20,9 @@ struct Camera {
 };
 
 struct Material {
-    vec3 ambient;
-    vec3 diffuseTint;
-    vec3 specularTint;
+    vec3 diffuseCol;
+    vec3 specularCol;
+    vec3 ambientCol;
     sampler2D texture_diffuse;
     sampler2D texture_specular;
     float shininess;
@@ -150,17 +150,17 @@ void main()
     vec4 diffuseTex = texture(material.texture_diffuse,uv);
     vec4 specularTex = texture(material.texture_specular,uv);
 
-    vec3 diffuseCol = diffuseTex.rgb * material.diffuseTint;
-    vec3 specularCol = specularTex.rgb * material.specularTint;
+    vec3 diffuseCol = diffuseTex.rgb * material.diffuseCol;
+    vec3 specularCol = specularTex.rgb * material.specularCol;
 
     for(int i = 0; i < POINT_LIGHT_COUNT; i++) {
-        result += calculatePointLights(pointLight[i], material.ambient, diffuseCol, specularCol, normal, viewDir, FragPos);
+        result += calculatePointLights(pointLight[i], material.ambientCol, diffuseCol, specularCol, normal, viewDir, FragPos);
     }
     for(int i = 0; i < DIRECTIONAL_LIGHT_COUNT; i++) {
-        result += calculateDirectionalLights(directionalLight[i], material.ambient, diffuseCol, specularCol, normal, viewDir);
+        result += calculateDirectionalLights(directionalLight[i], material.ambientCol, diffuseCol, specularCol, normal, viewDir);
     }
     for(int i = 0; i < SPOT_LIGHT_COUNT; i++) {
-        result += calculateSpotLights(spotLight[i], material.ambient, diffuseCol, specularCol, normal, viewDir, FragPos);
+        result += calculateSpotLights(spotLight[i], material.ambientCol, diffuseCol, specularCol, normal, viewDir, FragPos);
     }
 
     FragColor = vec4(result, 1.0);

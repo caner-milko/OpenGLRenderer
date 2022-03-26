@@ -1,8 +1,17 @@
 #include <GLTypes/Mesh.h>
 
-Mesh::Mesh(uint32_t id, RenderObjectData objectParams, Shader *const shader, const std::vector<Vertex> &vertices, const std::vector<uint32_t> &indices) : RenderObject(id, objectParams, shader), vertices(vertices), indices(indices)
+Mesh::Mesh(uint32_t id, RenderObjectData objectParams, Material *const material, std::vector<Vertex> &vertices, std::vector<uint32_t> &indices, bool move) : RenderObject(id, objectParams, material)
 {
-
+	if(move)
+	{
+		this->vertices = std::move(vertices);
+		this->indices = std::move(indices);
+	}
+	else
+	{
+		this->vertices = vertices;
+		this->indices = indices;
+	}
 }
 
 

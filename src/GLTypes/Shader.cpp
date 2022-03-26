@@ -1,13 +1,14 @@
 #pragma once
 #include <GLTypes/Shader.h>
-#include <Utils/FileUtils.h>
+#include <Utils.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-Shader::Shader(const char *vtxPath, const char *fragPath, uint32_t textureCount) : textureCount(textureCount)
+Shader::Shader(const char *vtxPath, const char *fragPath)
+	: textureCount(textureCount)
 {
 	// 1. read code from file
-	std::string vtxShaderCodeStr = FileUtils::readFile(vtxPath);
-	std::string fragShaderCodeStr = FileUtils::readFile(fragPath);
+	std::string vtxShaderCodeStr = Utils::FileUtils::readFile(vtxPath);
+	std::string fragShaderCodeStr = Utils::FileUtils::readFile(fragPath);
 
 	const char *vtxShaderCode = vtxShaderCodeStr.c_str();
 	const char *fragShaderCode = fragShaderCodeStr.c_str();
@@ -58,24 +59,50 @@ Shader::Shader(const char *vtxPath, const char *fragPath, uint32_t textureCount)
 	glDeleteShader(vtx);
 	glDeleteShader(frag);
 	use();
-	initTextures();
-}
-
-void Shader::initTextures() // TODO implement
-{
-
 }
 
 int32_t Shader::getUniformLocation(const std::string &name)
 {
-	if(UniformLocations.find(name) != UniformLocations.end())
-		return UniformLocations[name];
+	if(uniformLocations.find(name) != uniformLocations.end())
+		return uniformLocations[name];
 	int32_t loc = glGetUniformLocation(id, name.c_str());
 	if(loc == -1)
 		std::cout << "Warning: uniform '" << name << "' doesn't exist!" << std::endl;
-	UniformLocations[name] = loc;
+	uniformLocations[name] = loc;
 	return loc;
 }
+
+int32_t Shader::getTextureIndex(const char *name)
+{
+	int32_t texIndex;
+	auto it = textureIndices.find(name);
+	if(it == textureIndices.end())
+	{
+		texIndex = (int32_t)textureIndices.size();
+		setUniform<int32_t>(name, texIndex);
+		if(getUniformLocation(name) == -1)
+		{
+			return -1;
+		}
+		textureIndices.insert({name, texIndex});
+		return texIndex;
+	}
+	else
+	{
+		return it->second;
+	}
+}
+
+void Shader::setLastMaterial(int32_t material)
+{
+	lastMaterial = material;
+}
+
+int32_t Shader::getLastMaterial()
+{
+	return lastMaterial;
+}
+
 template<>
 void Shader::setUniform(const int32_t location, const bool &value)
 {
@@ -124,197 +151,6 @@ void Shader::setUniform(const int32_t location, const glm::mat4 &val)
 	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(val));
 }
 
-void Shader::selectObjectUniforms(const uint32_t object)
-{
-	for(auto &it : objectUniforms)
-	{
-		it.second->selectObject(object);
-	}
-}
-
-void Shader::use()
-{
-	glUseProgram(id);
-	lastUsed = id;
-}
-void Shader::free()
-{
-	glDeleteProgram(id);
-	for(auto const &it : objectUniforms)
-	{
-		delete it.second;
-	}
-	release();
-}
-void Shader::release()
-{
-	lastUsed = 0;
-	glUseProgram(0);
-}
+GLOBJ_DEFAULTS(Shader, glUseProgram, glDeleteProgram);
 
 GLOBJ_LAST_USED(Shader)
-
-IShaderUniform::IShaderUniform(Shader *const shader, const std::string &name) : shader(shader), name(name)
-{
-}
-
-template<typename Type>
-ShaderUniform<Type>::ShaderUniform(Shader *const shader, const std::string &name, const Type &defVal) : IShaderUniform(shader, name), lastEditor(-1), defVal(defVal)
-{
-	updateShader();
-}
-
-template<typename Type>
-ShaderUniform<Type>::ShaderUniform(Shader *const shader, const std::string &name, const Type &val, const int32_t object) : IShaderUniform(shader, name), lastEditor(object), defVal(val)
-{
-	specificValues[object] = val;
-	updateShader();
-}
-
-template <typename Type>
-void ShaderUniform<Type>::updateShader() const
-{
-	if(lastEditor == -1)
-	{
-		shader->setUniform<Type>(name, defVal);
-	}
-	else
-	{
-		shader->setUniform<Type>(name, specificValues.at(lastEditor));
-	}
-}
-
-template <typename Type>
-void ShaderUniform<Type>::setValue(const Type &val, const int32_t object)
-{
-	if(object == -1)
-	{
-		lastEditor = -1;
-		defVal = val;
-	}
-	else
-	{
-		lastEditor = object;
-		specificValues.insert_or_assign(lastEditor, val);
-	}
-	updateShader();
-}
-
-void ShaderUniform<Texture2D *>::setValue(Texture2D *const &val, const int32_t object)
-{
-	if(object == -1)
-	{
-		this->lastEditor = -1;
-		defVal = val;
-	}
-	else
-	{
-		this->lastEditor = object;
-		specificValues.insert_or_assign(lastEditor, val);
-	}
-	updateShader();
-}
-
-
-template <typename Type>
-void ShaderUniform<Type>::selectObject(const int32_t object)
-{
-	int32_t selected = object;
-	if(specificValues.find(object) == specificValues.end())
-	{
-		selected = -1;
-	}
-	if(lastEditor != selected)
-	{
-		lastEditor = selected;
-		updateShader();
-	}
-}
-
-template <typename Type>
-const Type &ShaderUniform<Type>::getValue(const int32_t object) const
-{
-	return object == -1 ? defVal : specificValues.at(object);
-}
-
-template <typename Type>
-const Type &ShaderUniform<Type>::getCurValue() const
-{
-	return lastEditor == -1 ? defVal : specificValues.at(lastEditor);
-}
-
-template <typename Type>
-const int32_t ShaderUniform<Type>::getLastEditor() const
-{
-	return lastEditor;
-}
-
-ShaderUniform<Texture2D *>::ShaderUniform(Shader *const shader, const std::string &name, Texture2D *const defVal) : IShaderUniform(shader, name), lastEditor(-1), defVal(defVal), texLoc(setupPosition())
-{
-	texLoc = setupPosition();
-}
-
-ShaderUniform<Texture2D *>::ShaderUniform(Shader *const shader, const std::string &name, Texture2D *const val, const int32_t object) : IShaderUniform(shader, name), lastEditor(object), defVal(val)
-{
-	specificValues[object] = val;
-	texLoc = setupPosition();
-}
-
-
-uint32_t ShaderUniform<Texture2D *>::setupPosition()
-{
-
-	int32_t pos = shader->addedTextureCount++;
-	glActiveTexture(GL_TEXTURE0 + pos);
-	shader->setUniform<int32_t>(name, pos);
-	getCurValue()->use();
-	glActiveTexture(GL_TEXTURE0);
-	return pos;
-}
-
-void ShaderUniform<Texture2D *>::updateShader() const
-{
-	glActiveTexture(GL_TEXTURE0 + texLoc);
-	getCurValue()->use();
-}
-
-
-
-
-void ShaderUniform<Texture2D *>::selectObject(const int32_t object)
-{
-	int32_t selected = object;
-	if(specificValues.find(object) == specificValues.end())
-	{
-		selected = -1;
-	}
-	if(lastEditor != selected)
-	{
-		lastEditor = selected;
-		updateShader();
-	}
-}
-
-Texture2D *const &ShaderUniform<Texture2D *>::getValue(const int32_t object) const
-{
-	return object == -1 ? defVal : specificValues.at(object);
-}
-
-Texture2D *const &ShaderUniform<Texture2D *>::getCurValue() const
-{
-	return lastEditor == -1 ? defVal : specificValues.at(lastEditor);
-}
-
-const int32_t ShaderUniform<Texture2D *>::getLastEditor() const
-{
-	return lastEditor;
-}
-
-TEMPLATE_UNIFORM(bool)
-TEMPLATE_UNIFORM(int32_t)
-TEMPLATE_UNIFORM(float)
-TEMPLATE_UNIFORM(glm::vec1)
-TEMPLATE_UNIFORM(glm::vec2)
-TEMPLATE_UNIFORM(glm::vec3)
-TEMPLATE_UNIFORM(glm::vec4)
-TEMPLATE_UNIFORM(glm::mat4)

@@ -18,47 +18,34 @@ void Renderer::init()
 	}
 }
 
-SimpleRenderObject *Renderer::addOddObject(RenderObjectData data, Shader *shader, const std::vector<float> &vertices, const std::vector<uint32_t> &attributeSizes)
+SimpleRenderObject *Renderer::addOddObject(RenderObjectData data, Material *material, const std::vector<float> &vertices, const std::vector<uint32_t> &attributeSizes)
 {
 	uint32_t id = itemCount++;
-	SimpleRenderObject *renderObject = new SimpleRenderObject(id, data, shader, vertices, attributeSizes);
+	SimpleRenderObject *renderObject = new SimpleRenderObject(id, data, material, vertices, attributeSizes);
 	addRenderObject(renderObject);
 	return renderObject;
 }
 
-SimpleRenderObject *Renderer::addSimpleObject(RenderObjectData data, Shader *shader, const std::vector<float> &vertices, const std::vector<uint32_t> &attributeSizes, const std::vector<uint32_t> &indices)
+SimpleRenderObject *Renderer::addSimpleObject(RenderObjectData data, Material *material, const std::vector<float> &vertices, const std::vector<uint32_t> &attributeSizes, const std::vector<uint32_t> &indices)
 {
 	uint32_t id = itemCount++;
-	SimpleRenderObject *renderObject = new SimpleRenderObject(id, data, shader, vertices, attributeSizes, indices);
+	SimpleRenderObject *renderObject = new SimpleRenderObject(id, data, material, vertices, attributeSizes, indices);
 	addRenderObject(renderObject);
 	return renderObject;
 }
 
-Mesh *Renderer::addAssimpMesh(RenderObjectData data, Shader *shader, AssimpMesh &assimpMesh)
+Mesh *Renderer::addMesh(RenderObjectData data, Material *material, std::vector<Vertex> &vertices, std::vector<uint32_t> &indices)
 {
 	uint32_t id = itemCount++;
-	Mesh *mesh = new Mesh(id, data, shader, assimpMesh.vertices, assimpMesh.indices);
+	Mesh *mesh = new Mesh(id, data, material, vertices, indices, true);
 	addRenderObject(mesh);
-	for(auto &texture : assimpMesh.textures)
-	{
-		shader->setUniformValObj<Texture2D *>("material." + texture.type, texture.texture, id);
-	}
 	return mesh;
 }
 
-std::vector<Mesh *> Renderer::addModel(RenderObjectData data, Shader *shader, const char *path)
+AssimpModel *Renderer::addModel(RenderObjectData data, const Material &baseMaterial, const char *path)
 {
-	AssimpModel model(path);
-	std::vector<Mesh *> meshes;
-	for(auto &mesh : model.meshes)
-	{
-		meshes.push_back(addAssimpMesh(data, shader, mesh));
-	}
-
-	return meshes;
+	return new AssimpModel(path, baseMaterial, data);
 }
-
-
 
 void Renderer::draw()
 {
@@ -69,9 +56,9 @@ void Renderer::draw()
 
 	lightManager->updateLights();
 
-	for(auto const &ro : renderObjects)
+	for(auto const &it : renderObjects)
 	{
-		ro->draw(*camera);
+		it.second->draw(*camera);
 	}
 
 	camera->clearFlags();
@@ -82,9 +69,9 @@ Renderer::~Renderer()
 	std::cout << "Renderer deleted." << std::endl;
 	delete lightManager;
 	delete camera;
-	for(auto const &ro : renderObjects)
+	for(auto const &it : renderObjects)
 	{
-		delete ro;
+		delete it.second;
 	}
 	for(auto &it : vertexBuffers)
 	{
@@ -109,5 +96,5 @@ void Renderer::addRenderObject(RenderObject *renderObject)
 	if(renderObject->hasElementBuffer())
 		elementBuffers.push_back(renderObject->getElementBuffer());
 
-	renderObjects.push_back(renderObject);
+	renderObjects[renderObject->rObjectID] = renderObject;
 }

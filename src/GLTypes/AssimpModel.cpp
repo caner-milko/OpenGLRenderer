@@ -1,8 +1,8 @@
 #include <GLTypes/AssimpModel.h>
+#include <GLTypes/Renderer.h>
 
 
-
-AssimpModel::AssimpModel(const char *path)
+AssimpModel::AssimpModel(const char *path, const Material &defMaterial, RenderObjectData data) : material(defMaterial), data(data)
 {
 	loadModel(path);
 }
@@ -10,7 +10,7 @@ AssimpModel::AssimpModel(const char *path)
 void AssimpModel::loadModel(std::string path)
 {
 	Assimp::Importer import;
-	const aiScene *scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+	const aiScene *scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
 
 	if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -18,9 +18,11 @@ void AssimpModel::loadModel(std::string path)
 		return;
 	}
 	directory = path.substr(0, path.find_last_of('/'));
-
+	processMaterials(scene);
 	processNode(scene->mRootNode, scene);
 }
+
+
 
 void AssimpModel::processNode(aiNode *node, const aiScene *scene)
 {
@@ -37,12 +39,11 @@ void AssimpModel::processNode(aiNode *node, const aiScene *scene)
 	}
 }
 
-AssimpMesh AssimpModel::processMesh(aiMesh *mesh, const aiScene *scene)
+Mesh *AssimpModel::processMesh(aiMesh *mesh, const aiScene *scene)
 {
 	std::vector<Vertex> vertices;
 	std::vector<uint32_t> indices;
-	std::vector<AssimpTexture> textures;
-
+	vertices.reserve(mesh->mNumVertices);
 	for(unsigned int i = 0; i < mesh->mNumVertices; i++)
 	{
 		Vertex vertex;
@@ -66,7 +67,9 @@ AssimpMesh AssimpModel::processMesh(aiMesh *mesh, const aiScene *scene)
 		}
 		vertices.push_back(vertex);
 	}
-	// process indices
+
+	indices.reserve((size_t)mesh->mNumFaces * 3);
+
 	for(uint32_t i = 0; i < mesh->mNumFaces; i++)
 	{
 		aiFace &face = mesh->mFaces[i];
@@ -76,46 +79,68 @@ AssimpMesh AssimpModel::processMesh(aiMesh *mesh, const aiScene *scene)
 		}
 	}
 
-	if(mesh->mMaterialIndex >= 0)
-	{
-		aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
-		std::vector<AssimpTexture> diffuseMaps = loadMaterialTextures(material,
-			aiTextureType_DIFFUSE, "texture_diffuse");
-		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-		std::vector<AssimpTexture> specularMaps = loadMaterialTextures(material,
-			aiTextureType_SPECULAR, "texture_specular");
-		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-	}
-
-	return AssimpMesh(vertices, indices, textures);
+	return Renderer::renderer->addMesh(data, materials[mesh->mMaterialIndex], vertices, indices);
 }
 
-std::vector<AssimpTexture> AssimpModel::loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName)
+void AssimpModel::processMaterials(const aiScene *scene)
 {
-	std::vector<AssimpTexture> textures;
-	for(unsigned int i = 0; i < mat->GetTextureCount(type); i++)
+	materials.reserve(scene->mNumMaterials);
+	for(uint32_t i = 0; i < scene->mNumMaterials; i++)
 	{
-		aiString str;
-		mat->GetTexture(type, i, &str);
-		bool skip = false;
-		for(unsigned int j = 0; j < texturesLoaded.size(); j++)
+		aiMaterial *curMat = scene->mMaterials[i];
+		Material *genMat = new Material(material, curMat->GetName().C_Str());
+		materials.push_back(genMat);
+
+		loadMaterialProperties(curMat, genMat);
+
+	}
+}
+
+void loadColorProperty(aiMaterial *aiMat, Material *genMat, const char *aiKey, uint32_t type, uint32_t idx, const char *matKey)
+{
+	aiColor3D aiCol;
+	aiMat->Get(aiKey, type, idx, aiCol);
+	std::cout << matKey << ": r: " << aiCol.r << " g: " << aiCol.g << " b: " << aiCol.b << std::endl;
+	glm::vec3 col(aiCol.r, aiCol.g, aiCol.b);
+	genMat->setUniform<glm::vec3>(matKey, col);
+}
+
+void AssimpModel::loadMaterialProperties(aiMaterial *aiMat, Material *genMat)
+{
+	loadColorProperty(aiMat, genMat, AI_MATKEY_COLOR_DIFFUSE, "diffuseCol");
+	loadColorProperty(aiMat, genMat, AI_MATKEY_COLOR_SPECULAR, "specularCol");
+	//loadColorProperty(aiMat, genMat, AI_MATKEY_COLOR_AMBIENT, "ambientCol");
+
+	loadMaterialTextureType(aiMat, genMat, aiTextureType_DIFFUSE, "texture_diffuse");
+	loadMaterialTextureType(aiMat, genMat, aiTextureType_SPECULAR, "texture_specular");
+}
+
+Texture2D *AssimpModel::loadMaterialTextureType(aiMaterial *aiMat, Material *genMat, aiTextureType type, const char *materialName)
+{
+	Texture2D *texture;
+	aiString str;
+	aiMat->GetTexture(type, 0, &str);
+	if(str.length == 0)
+	{
+		std::cout << "No texture found for " << materialName << " in Material:" << aiMat->GetName().C_Str() << std::endl;
+		return nullptr;
+	}
+	bool skip = false;
+	for(uint32_t j = 0; j < texturesLoaded.size(); j++)
+	{
+		if(std::strcmp(texturesLoaded[j]->path.c_str(), str.C_Str()) == 0)
 		{
-			if(std::strcmp(texturesLoaded[j].path.data(), str.C_Str()) == 0)
-			{
-				textures.push_back(texturesLoaded[j]);
-				skip = true;
-				break;
-			}
-		}
-		if(!skip)
-		{   // if texture hasn't been loaded already, load it
-			AssimpTexture texture;
-			texture.texture = new Texture2D((directory + "\\" + str.C_Str()).c_str(), false, TextureType::RGB, TextureType::RGB);
-			texture.type = typeName;
-			texture.path = str.C_Str();
-			textures.push_back(texture);
-			texturesLoaded.push_back(texture); // add to loaded textures
+			texture = texturesLoaded[j];
+			skip = true;
+			break;
 		}
 	}
-	return textures;
+	if(!skip)
+	{
+		Texture2D *genTexture = new Texture2D((directory + "/" + str.C_Str()).c_str());
+		texture = genTexture;
+		texturesLoaded.push_back(texture);
+	}
+	genMat->setUniform<Texture2D *>(materialName, texture);
+	return texture;
 }
