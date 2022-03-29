@@ -33,7 +33,7 @@ public:
 		auto it = uniforms.find(name);
 		if(it == uniforms.end())
 		{
-			createUniform<T>(name, value)->updateUniform();
+			createUniform<T>(name, value)->updateUniform(true);
 			return;
 		}
 		((ShaderUniform<T>*)it->second.get())->set(value);

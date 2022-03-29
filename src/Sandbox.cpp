@@ -18,6 +18,9 @@ float deltaTime = 0.0f;	// Time between current frame and last frame
 float currentFrame = 0.0f;
 float lastFrame = 0.0f; // Time of last frame
 
+float windowWidth = 800.0f;
+float windowHeight = 600.0f;
+
 FreeCamera *camera;
 
 glm::vec3 cameraPos(0.0f, 0.0f, 3.0f);
@@ -41,7 +44,7 @@ void end();
 Sandbox::Sandbox()
 {
 	initWindow();
-	renderer = new Renderer(RendererData());
+	renderer = new Renderer(RendererData(), windowWidth / windowHeight);
 	renderer->init();
 	initCamera();
 	initTextures();
@@ -65,7 +68,7 @@ void initWindow()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
+	window = glfwCreateWindow((int)windowWidth, (int)windowHeight, "LearnOpenGL", NULL, NULL);
 
 	if(window == NULL)
 	{
@@ -94,10 +97,12 @@ void initCamera()
 	camera->setCameraPos(glm::vec3(0.0f, 0.0f, 3.0f));
 }
 
-Texture2D *wallTex, *smileTex;
+Texture2D *whiteTex, *blackTex, *wallTex, *smileTex;
 
 void initTextures()
 {
+	whiteTex = new Texture2D("./assets/white.png");
+	blackTex = new Texture2D("./assets/black.png");
 	wallTex = new Texture2D("./Assets/wall.jpg");
 	smileTex = new Texture2D("./Assets/awesomeface.png");
 }
@@ -121,7 +126,6 @@ void initShaders()
 	litShader = new Shader("./Assets/Shaders/lit_vert.glsl", "./Assets/Shaders/lit_frag.glsl");
 
 	renderer->lightManager->litShaders.push_back(litShader);
-
 
 	materialShader = new Shader("./Assets/Shaders/material_vert.glsl", "./Assets/Shaders/material_frag.glsl");
 
@@ -158,6 +162,7 @@ void initMaterials()
 	materialMat->setUniform("shininess", glm::vec1(32.0f));
 	materialMat->setUniform("texture_diffuse", wallTex);
 	materialMat->setUniform("texture_specular", smileTex);
+
 
 	testMat = new Material(*testShader, "testMat");
 }
@@ -403,12 +408,18 @@ void initObjects()
 	totObj->setPosition(glm::vec3(3.0f));
 	totObj->setScale(glm::vec3(2.0f));
 
+	Material *tempMat = new Material(*materialMat, "tempMat");
+
+
+	tempMat->setUniform("texture_diffuse", whiteTex);
+	tempMat->setUniform("texture_specular", whiteTex);
 
 	screw = renderer->addModel(RenderObjectData(), *materialMat, "./Assets/Models/test/vida_obj.obj");
 
 
-	//room = renderer->addModel(RenderObjectData(), *materialMat, "./Assets/Models/room/room.obj");
+	room = renderer->addModel(RenderObjectData(), *tempMat, "./Assets/Models/room/room.obj");
 
+	delete tempMat;
 
 	std::vector<glm::vec3> cubePositions = {
 		glm::vec3(1.0f, 1.0f, 1.0f),
@@ -513,6 +524,8 @@ void end()
 	delete litShader;
 	delete materialShader;
 	delete testShader;
+	delete whiteTex;
+	delete blackTex;
 	delete wallTex;
 	delete smileTex;
 	delete renderer;
@@ -563,7 +576,10 @@ void processInput(GLFWwindow *window)
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
+	windowWidth = (float)width;
+	windowHeight = (float)height;
 	glViewport(0, 0, width, height);
+	camera->setAspectRatio(windowWidth / windowHeight);
 }
 
 void mouse_callback(GLFWwindow *window, double xpos, double ypos)

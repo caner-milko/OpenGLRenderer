@@ -65,6 +65,7 @@ int32_t Shader::getUniformLocation(const std::string &name)
 {
 	if(uniformLocations.find(name) != uniformLocations.end())
 		return uniformLocations[name];
+	useIfNecessary();
 	int32_t loc = glGetUniformLocation(id, name.c_str());
 	if(loc == -1)
 		std::cout << "Warning: uniform '" << name << "' doesn't exist!" << std::endl;

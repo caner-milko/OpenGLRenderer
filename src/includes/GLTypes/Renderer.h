@@ -37,7 +37,7 @@ public:
 	FreeCamera *camera;
 	LightManager *lightManager;
 
-	Renderer(RendererData data);
+	Renderer(RendererData data, float aspectRatio);
 
 	void init();
 

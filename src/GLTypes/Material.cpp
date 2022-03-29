@@ -3,10 +3,12 @@ uint32_t Material::materialCount = 0;
 
 Material::Material(Shader &shader, const char *name) : materialID(materialCount++), shader(shader), name(name)
 {
+	shader.setLastMaterial(materialID);
 }
 
 Material::Material(const Material &other, const char *name) : materialID(materialCount++), shader(other.shader), name(name)
 {
+	shader.setLastMaterial(materialID);
 	for(auto &it : other.uniforms)
 	{
 		uniforms.emplace(it.first, it.second->clone(*this, it.second));
@@ -15,13 +17,13 @@ Material::Material(const Material &other, const char *name) : materialID(materia
 
 void Material::use()
 {
-	if(isLastMaterial())
-		return;
-	shader.setLastMaterial(materialID);
+	shader.useIfNecessary();
+	bool isLast = isLastMaterial();
 	for(auto &it : uniforms)
 	{
 		it.second->updateUniform(false);
 	}
+	shader.setLastMaterial(materialID);
 }
 
 bool Material::isLastMaterial()

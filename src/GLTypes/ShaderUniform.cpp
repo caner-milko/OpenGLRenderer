@@ -16,9 +16,9 @@ std::unique_ptr<IShaderUniform>  ShaderUniform<T>::clone(Material &material, con
 }
 
 template<typename T>
-void ShaderUniform<T>::updateUniform(bool matCheck)
+void ShaderUniform<T>::updateUniform(bool newVal)
 {
-	if(!matCheck || this->material.isLastMaterial())
+	if((!newVal || (newVal && this->material.isLastMaterial())))
 		this->material.shader.setUniform<T>("material." + this->name, this->value);
 }
 
@@ -32,15 +32,13 @@ std::unique_ptr<IShaderUniform> TextureShaderUniform::clone(Material &material, 
 	return std::make_unique<TextureShaderUniform>(material, other->name, ((TextureShaderUniform *)other.get())->get());
 }
 #include <Utils.hpp>
-void TextureShaderUniform::updateUniform(bool materialCheck)
+void TextureShaderUniform::updateUniform(bool newVal)
 {
-	if(!materialCheck || material.isLastMaterial())
+	if((!newVal || (newVal && material.isLastMaterial())) && texLoc >= 0)
 	{
-		if(texLoc >= 0)
-		{
-			glActiveTexture(GL_TEXTURE0 + texLoc);
-			get()->use();
-		}
+		material.shader.use();
+		glActiveTexture(GL_TEXTURE0 + texLoc);
+		get()->use();
 	}
 }
 

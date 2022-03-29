@@ -1,7 +1,7 @@
 #include <GLTypes/Camera.h>
 #include <glm/gtc/matrix_transform.hpp>
 
-FreeCamera::FreeCamera(const glm::vec3 &cameraPos, float yaw, float pitch, float fov) : cameraPos(cameraPos), cameraUp(0.0f, 1.0f, 0.0f), yaw(yaw), pitch(pitch), fov(fov)
+FreeCamera::FreeCamera(const glm::vec3 &cameraPos, const float aspectRatio, float yaw, float pitch, float fov, float nearPlane, float farPlane) : cameraPos(cameraPos), cameraUp(0.0f, 1.0f, 0.0f), yaw(yaw), pitch(pitch), fov(fov), aspectRatio(aspectRatio), nearPlane(nearPlane), farPlane(farPlane)
 {
 	updateMatrices(true);
 }
@@ -35,10 +35,6 @@ const glm::mat4 &FreeCamera::getVPMatrix()
 	updateMatrices();
 	return vp;
 }
-const float FreeCamera::getFOV()
-{
-	return fov;
-}
 const float FreeCamera::getPitch()
 {
 	return pitch;
@@ -46,6 +42,22 @@ const float FreeCamera::getPitch()
 const float FreeCamera::getYaw()
 {
 	return yaw;
+}
+const float FreeCamera::getFOV()
+{
+	return fov;
+}
+const float FreeCamera::getAspectRatio()
+{
+	return aspectRatio;
+}
+const float FreeCamera::getNearPlane()
+{
+	return nearPlane;
+}
+const float FreeCamera::getFarPlane()
+{
+	return farPlane;
 }
 
 
@@ -90,6 +102,27 @@ void FreeCamera::setFOV(float fov)
 	changedProjection = true;
 }
 
+void FreeCamera::setAspectRatio(float aspectRatio)
+{
+	this->aspectRatio = aspectRatio;
+
+	changedProjection = true;
+}
+void FreeCamera::setNearPlane(float nearPlane)
+{
+	this->nearPlane = nearPlane;
+
+	changedProjection = true;
+}
+void FreeCamera::setFarPlane(float farPlane)
+{
+	this->farPlane = farPlane;
+
+	changedProjection = true;
+}
+
+
+
 void FreeCamera::validateMaxMins()
 {
 	if(pitch > maxPitch || pitch < minPitch)
@@ -121,7 +154,7 @@ const glm::mat4 &FreeCamera::updateMatrices(bool forced)
 	}
 	if(changedProjection || forced)
 	{
-		projection = glm::perspective(glm::radians(fov), 800.0f / 600.0f, 0.1f, 100.0f);
+		projection = glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
 	}
 	if(changedView || changedProjection || forced)
 	{

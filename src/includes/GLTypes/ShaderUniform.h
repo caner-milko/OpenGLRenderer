@@ -14,7 +14,7 @@ public:
 	IShaderUniform(Material &material, const std::string &name);
 
 	virtual std::unique_ptr<IShaderUniform> clone(Material &material, const std::unique_ptr<IShaderUniform> &other) = 0;
-	virtual void updateUniform(bool matCheck = true) = 0;
+	virtual void updateUniform(bool wasLast) = 0;
 };
 
 template<typename T>
@@ -29,13 +29,13 @@ public:
 	void set(const T &newValue)
 	{
 		this->value = newValue;
-		updateUniform();
+		updateUniform(true);
 	}
 	const T &get() const
 	{
 		return value;
 	}
-	virtual void updateUniform(bool matCheck = true) override = 0;
+	virtual void updateUniform(bool newVal) override = 0;
 };
 
 
@@ -46,7 +46,7 @@ private:
 public:
 	TextureShaderUniform(Material &material, const std::string &name, Texture2D *const &value);
 	std::unique_ptr<IShaderUniform> clone(Material &material, const std::unique_ptr<IShaderUniform> &other) override;
-	void updateUniform(bool matCheck = true) override;
+	void updateUniform(bool wasLast) override;
 };
 
 template<typename T>
@@ -55,7 +55,7 @@ class ShaderUniform : public DefShaderUniform<T>
 public:
 	ShaderUniform(Material &material, const std::string &name, const T &value);
 	std::unique_ptr<IShaderUniform> clone(Material &material, const std::unique_ptr<IShaderUniform> &other) override;
-	void updateUniform(bool matCheck = true) override;
+	void updateUniform(bool newVal) override;
 };
 
 #define templateUniforms()

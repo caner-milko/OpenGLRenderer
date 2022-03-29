@@ -5,7 +5,7 @@ uint32_t RendererData::getClearMask()
 }
 
 Renderer *Renderer::renderer;
-Renderer::Renderer(RendererData data) : camera(new FreeCamera(glm::vec3(0.0f))), data(data), lightManager(new LightManager())
+Renderer::Renderer(RendererData data, float aspectRatio) : camera(new FreeCamera(glm::vec3(0.0f), aspectRatio)), data(data), lightManager(new LightManager())
 {
 	renderer = this;
 }
