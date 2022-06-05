@@ -18,7 +18,7 @@ public:
 
 	const glm::vec3 &getCameraPos();
 	const glm::vec3 &getCameraDir();
-	const glm::vec3 &getCameraRight();
+	glm::vec3 getCameraRight();
 	const glm::mat4 &getViewMatrix();
 	const glm::mat4 &getProjectionMatrix();
 	const glm::mat4 &getVPMatrix();
