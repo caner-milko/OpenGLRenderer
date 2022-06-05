@@ -16,7 +16,7 @@ const glm::vec3 &FreeCamera::getCameraDir()
 	return dir;
 }
 
-const glm::vec3 &FreeCamera::getCameraRight()
+glm::vec3 FreeCamera::getCameraRight()
 {
 	return glm::normalize(glm::cross(getCameraDir(), cameraUp));
 }
