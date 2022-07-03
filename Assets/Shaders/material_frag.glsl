@@ -81,11 +81,14 @@ uniform SpotLight[SPOT_LIGHT_COUNT] spotLight;
 vec3 calculatePointLights(PointLight light, vec3 ambientCol, vec3 difCol, vec3 specCol, vec3 normal, vec3 viewDir, vec3 fragPos) {
     
     vec3 lightDir = normalize(light.lightPos - fragPos);
+
+    vec3 halfDir = normalize(lightDir + viewDir);
+
     // diffuse shading
     float diff = max(dot(normal, lightDir), 0.0);
     // specular shading
     vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    float spec = pow(max(dot(normal, halfDir), 0.0), material.shininess);
     // attenuation
     float distance    = length(light.lightPos - fragPos);
     float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));    
@@ -94,21 +97,19 @@ vec3 calculatePointLights(PointLight light, vec3 ambientCol, vec3 difCol, vec3 s
     vec3 diffuse  = light.diffuse  * diff * difCol;
     vec3 specular = light.specular * spec * specCol;
     return (ambient + diffuse + specular) * attenuation;
-
 }
 
 vec3 calculateDirectionalLights(DirectionalLight light, vec3 ambientCol, vec3 difCol, vec3 specCol, vec3 normal, vec3 viewDir) {
     // ambient
     vec3 ambient = light.ambient * ambientCol;
-  	
     // diffuse 
     vec3 lightDir = normalize(-light.lightDir);  
     float diff = max(dot(normal, lightDir), 0.0);
     vec3 diffuse = light.diffuse * diff * difCol;  
     
     // specular
-    vec3 reflectDir = reflect(-lightDir, normal);  
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+  	vec3 halfDir = normalize(lightDir + viewDir);
+    float spec = pow(max(dot(normal, halfDir), 0.0), material.shininess);
     vec3 specular = light.specular * spec * specCol;  
 
     return ambient + diffuse + specular;
@@ -118,9 +119,11 @@ vec3 calculateSpotLights(SpotLight light,  vec3 ambientCol, vec3 difCol, vec3 sp
     vec3 lightDir = normalize(light.lightPos - fragPos);
     // diffuse shading
     float diff = max(dot(normal, lightDir), 0.0);
+
+    vec3 halfDir = normalize(lightDir + viewDir);
+
     // specular shading
-    vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    float spec = pow(max(dot(normal, halfDir), 0.0), material.shininess);
     // attenuation
     float distance    = length(light.lightPos - fragPos);
     float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));    
